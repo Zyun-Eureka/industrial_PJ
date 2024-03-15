@@ -8,7 +8,7 @@
    
 > 新增代码说明
 ``` cpp
-    //窗口状态:正常，最大化，隐藏，未在范围内
+    //窗口状态:正常，最大化，隐藏，未在显示范围内
     enum WINSTATE{_Normal = 0,_Max,_Hide,_Out};
     class camera{
     public:
