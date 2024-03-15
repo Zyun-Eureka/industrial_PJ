@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>vertify_d</class>
+ <widget class="QDialog" name="vertify_d">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>900</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QWidget" name="BG" native="true">
+     <property name="styleSheet">
+      <string notr="true">#BG{
+background-color: rgba(0, 0, 0, 150);
+}</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QFrame" name="MP">
+        <property name="maximumSize">
+         <size>
+          <width>450</width>
+          <height>240</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">#MP{
+background-color: rgb(255, 255, 255);
+border 0px splid;
+border-top-right-radius:20px;
+border-bottom-left-radius:20px;
+}</string>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QLabel" name="label">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>20</y>
+           <width>451</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>25</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>身份验证</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_2">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>70</y>
+           <width>431</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>当前正在进行敏感操作，请输入密码进行验证 ！</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLineEdit" name="password">
+         <property name="geometry">
+          <rect>
+           <x>110</x>
+           <y>120</y>
+           <width>240</width>
+           <height>30</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="echoMode">
+          <enum>QLineEdit::Password</enum>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="vertify_bt">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>190</y>
+           <width>231</width>
+           <height>51</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border:1px solid;
+background-color: rgb(255, 255, 255);
+border-color: rgb(192, 191, 188);
+border-bottom-left-radius:20px;</string>
+         </property>
+         <property name="text">
+          <string>确定</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="close_bt">
+         <property name="geometry">
+          <rect>
+           <x>230</x>
+           <y>190</y>
+           <width>221</width>
+           <height>51</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">border:1px solid;
+background-color: rgb(255, 255, 255);
+border-color: rgb(192, 191, 188);</string>
+         </property>
+         <property name="text">
+          <string>取消</string>
+         </property>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

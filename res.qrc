@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>SVG/network-off.svg</file>
+        <file>SVG/network-on.svg</file>
+        <file>SVG/no.svg</file>
+        <file>SVG/yes.svg</file>
+        <file>SVG/checked.svg</file>
+        <file>SVG/unchecked.svg</file>
+    </qresource>
+</RCC>
