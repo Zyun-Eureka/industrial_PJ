@@ -6,5 +6,7 @@
         <file>SVG/yes.svg</file>
         <file>SVG/checked.svg</file>
         <file>SVG/unchecked.svg</file>
+        <file>SVG/folder.svg</file>
+        <file>SVG/picture.svg</file>
     </qresource>
 </RCC>

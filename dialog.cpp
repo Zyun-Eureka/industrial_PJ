@@ -24,12 +24,26 @@ Dialog::Dialog(QWidget *parent)
 
     connect(&settings,SIGNAL(change(int,int)),this,SLOT(setting_c(int,int)));
 
+    connect(&_fileManger,&FileManager::up_img_update,this,[&](){
+        ui->up_img->update();
+    });
+
     ui->AllData->installEventFilter(this);
     ui->SubData->installEventFilter(this);
+    ui->up_tree->installEventFilter(this);
+    ui->update_main->installEventFilter(this);
+    ui->up_img->installEventFilter(this);
     setWindowFlags(Qt::WindowMaximizeButtonHint|Qt::WindowCloseButtonHint);
 
     all_NG=all_OK=com_NG=com_OK=0;
     settings.sysn();
+
+    ui->up_tree->setHeaderHidden(true);
+    ui->up_tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->up_tree->setModel(_fileManger.u_model);
+    ui->up_list->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->up_list->setModel(_fileManger.u_fmodel);
+    ui->main_area->setCurrentIndex(0);
 }
 
 Dialog::~Dialog()
@@ -44,16 +58,27 @@ Dialog::~Dialog()
 
 bool Dialog::eventFilter(QObject *obj, QEvent *e){
     if(e->type()==QEvent::Paint){
+        if(obj == ui->up_img){
+            QPainter pa(ui->up_img);
+            pa.drawImage(_fileManger.up_img_x,_fileManger.up_img_y,_fileManger.up_buffer);
+//            pa.setBrush(Qt::white);
+//            int widths = 60;
+//            pa.drawRect(ui->up_img->width()/2.0-widths,ui->up_img->height()-widths-10,widths*2,widths);
+//            pa.drawText(QRect(ui->up_img->width()/2.0-widths,ui->up_img->height()-widths-10,widths*2,widths),"<  >",);
+        }
         QVector<double> value;
         if(obj == ui->AllData){
             value.push_back(all_OK);
             value.push_back(all_NG);
+            goto e_m_start;
         }else if(obj == ui->SubData){
             value.push_back(com_OK);
             value.push_back(com_NG);
+            goto e_m_start;
         }else{
             goto e_f_end;
         }
+        e_m_start:
         QPainter pa(static_cast<QWidget*>(obj));
         pa.setRenderHint(QPainter::Antialiasing);
         double width,height,diameter,startAngle,nowAngle,max,color_pos;
@@ -90,9 +115,16 @@ bool Dialog::eventFilter(QObject *obj, QEvent *e){
             pa.drawPie(width,height,diameter-pa.pen().width(),diameter-pa.pen().width(),startAngle*16,nowAngle*16);
             startAngle +=nowAngle;
         }
+        goto e_f_end;
     }else if(e->type()==QEvent::Resize){
         if(obj==ui->AllData){
             ui->AllData->setMinimumHeight(ui->AllData->width());
+        }else if(obj==ui->up_img){
+            _fileManger.u_img_size_change(ui->up_img->size());
+        }
+    }else if(e->type()==QEvent::ContextMenu){
+        if(obj==ui->up_tree){
+            _fileManger.getUpdataPath();
         }
     }
     e_f_end:
@@ -310,5 +342,48 @@ void Dialog::on_full_toggled(bool checked)
     }else{
         setWindowState(Qt::WindowNoState);
     }
+}
+
+void Dialog::on_update_bt_toggled(bool checked)
+{
+    if(checked){
+        up_bt_page = ui->main_area->currentIndex();
+        ui->main_area->setCurrentIndex(1);
+    }else{
+        ui->main_area->setCurrentIndex(up_bt_page);
+    }
+}
+
+void Dialog::on_up_tree_pressed(const QModelIndex &index)
+{
+    if(index.isValid())
+    _fileManger.u_flist_change(index);
+}
+
+
+void Dialog::on_up_list_pressed(const QModelIndex &index)
+{
+    if(index.isValid())
+    _fileManger.u_flist_click(index);
+}
+
+
+void Dialog::on_up_pressed()
+{
+    int row = ui->up_list->currentIndex().row()-1;
+    if(row == -2)return;
+    if(row == -1)row = ui->up_list->model()->rowCount()-1;
+    ui->up_list->pressed(ui->up_list->model()->index(row,0));
+    ui->up_list->setCurrentIndex(ui->up_list->model()->index(row,0));
+}
+
+
+void Dialog::on_next_pressed()
+{
+    int row = ui->up_list->currentIndex().row()+1;
+    if(row == ui->up_list->model()->rowCount()+1)return;
+    if(row == ui->up_list->model()->rowCount())row = 0;
+    ui->up_list->pressed(ui->up_list->model()->index(row,0));
+    ui->up_list->setCurrentIndex(ui->up_list->model()->index(row,0));
 }
 

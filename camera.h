@@ -69,6 +69,7 @@ private:
     //临时内容
     QString tmp_str;
 
+    QString path;
     int value_OK;
     int value_NG;
     //窗口状态

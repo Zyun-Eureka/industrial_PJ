@@ -57,7 +57,7 @@ bool camera::eventFilter(QObject *watched, QEvent *event)
             //或者存入路径用于打开文件夹/网页api?
             //open(tmp_str)
             //此处使用画笔将tmp_str储存的id打印在区域中间
-            pa.drawText(QRect(0,0,ui->display->width()-pen.width()*2,ui->display->height()-pen.width()*2),Qt::AlignCenter,"此为相机:"+tmp_str);
+            //pa.drawText(QRect(0,0,ui->display->width()-pen.width()*2,ui->display->height()-pen.width()*2),Qt::AlignCenter,"此为相机:"+tmp_str);
 
         }
     }else if(watched == ui->frame_top){

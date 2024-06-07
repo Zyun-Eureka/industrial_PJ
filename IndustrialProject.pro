@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     camera.cpp \
+    filemanager.cpp \
     main.cpp \
     dialog.cpp \
     settingpage.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
 HEADERS += \
     camera.h \
     dialog.h \
+    filemanager.h \
     settingpage.h \
     vertify_d.h
 

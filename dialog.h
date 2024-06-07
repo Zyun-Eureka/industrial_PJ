@@ -11,6 +11,7 @@
 #include <QLabel>
 
 #include "settingpage.h"
+#include "filemanager.h"
 
 #include <QTableWidgetItem>
 
@@ -76,10 +77,22 @@ private slots:
 
     void on_full_toggled(bool checked);
 
-private:
+    void on_update_bt_toggled(bool checked);
 
+    void on_up_tree_pressed(const QModelIndex &index);
+
+    void on_up_list_pressed(const QModelIndex &index);
+
+    void on_up_pressed();
+
+    void on_next_pressed();
+
+private:
+    int up_bt_page;
     int camNum;
-    unsigned   long long all_NG,all_OK,com_NG,com_OK;
+    unsigned long long all_NG,all_OK,com_NG,com_OK;
+
+    FileManager _fileManger;
 
     void updateNum();
     void updateCom();
