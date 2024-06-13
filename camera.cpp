@@ -19,20 +19,23 @@ camera::camera(int ID, QWidget *state_area, QWidget *parent)
 
     //注册事件循环监听
     ui->display->installEventFilter(this);
-
     ui->frame_top->installEventFilter(this);
-    tmp_str = ID;
-    img = nullptr;
+
+
+    img = new QImage();
+    reader.setImgBuffer(img);
+    thread = new QThread();
+    reader.moveToThread(thread);
+    thread->start();
+    connect(this,&camera::sig_next,&reader,&FileReader::next);
+    connect(&reader,&FileReader::Readready,this,[&](){
+        this->update();
+    });
 }
 
 camera::~camera()
 {
     delete ui;
-}
-
-void camera::setImgBuffer(QImage *img)
-{
-    this->img = img;
 }
 
 void camera::show()
@@ -48,26 +51,25 @@ bool camera::eventFilter(QObject *watched, QEvent *event)
 {
     if(watched == ui->display){
         if(event->type()==QEvent::Paint){
+            //qDebug()<<this<<"paint"<<ID;
             //控件绘制实现
             QPainter pa(ui->display);
             pa.setBrush(Qt::black);
             //设置画笔颜色
             QPen pen;
-//            pen.setColor(Qt::red);
             pa.setPen(pen);
             //因为画笔也有厚度所以画面会溢出，可以减去画笔厚度
             pa.drawRoundedRect(0,0,ui->display->width()-pen.width()*2,ui->display->height()-pen.width()*2,10,10);
             if(img!=nullptr){
-                pa.drawImage(0,0,*img);
+                pa.drawImage(reader.x,reader.y,*img);
             }
-            //此处可以通过id或者sting变量区分摄像头
-            //我在h文件声明了个tmp_str初始化为相机ID
-            //if(tmp_str==""){//code}
-            //或者存入路径用于打开文件夹/网页api?
-            //open(tmp_str)
-            //此处使用画笔将tmp_str储存的id打印在区域中间
-            //pa.drawText(QRect(0,0,ui->display->width()-pen.width()*2,ui->display->height()-pen.width()*2),Qt::AlignCenter,"此为相机:"+tmp_str);
-
+        }else if(event->type()==QEvent::Resize){
+            reader.setSize(ui->display->size());
+        }else if(event->type()==QEvent::ContextMenu){
+            QString str = QFileDialog::getExistingDirectory(nullptr,"open","",QFileDialog::ShowDirsOnly);
+            if(!str.isEmpty()){
+                setPath(str);
+            }
         }
     }else if(watched == ui->frame_top){
         if(event->type()==QEvent::MouseButtonDblClick){
@@ -107,6 +109,21 @@ void camera::closecamera()
 void camera::p_StateChange(WINSTATE state)
 {
     StateChange(ID,state);
+}
+
+void camera::setPath(QString path)
+{
+    reader.setPath(path);
+}
+
+QString camera::getPath()
+{
+    return reader.getpath();
+}
+
+void camera::nextimg()
+{
+    sig_next();
 }
 
 void camera::StateChange(int cid,WINSTATE s)

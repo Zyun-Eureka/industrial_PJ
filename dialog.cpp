@@ -30,7 +30,7 @@ Dialog::Dialog(QWidget *parent)
         ui->up_img->update();
     });
 
-    connect(&_fileManger,&FileManager::imgReady,this,&Dialog::cameraUpdate);
+    //connect(&_fileManger,&FileManager::imgReady,this,&Dialog::cameraUpdate);
 
     ui->AllData->installEventFilter(this);
     ui->SubData->installEventFilter(this);
@@ -95,7 +95,7 @@ bool Dialog::eventFilter(QObject *obj, QEvent *e){
         }else{
             goto e_f_end;
         }
-        e_m_start:
+e_m_start:
         QPainter pa(static_cast<QWidget*>(obj));
         pa.setRenderHint(QPainter::Antialiasing);
         double width,height,diameter,startAngle,nowAngle,max,color_pos;
@@ -158,7 +158,7 @@ bool Dialog::eventFilter(QObject *obj, QEvent *e){
         up_img_click = false;
         mv_img->hide();
     }
-    e_f_end:
+e_f_end:
     return QDialog::eventFilter(obj,e);
 }
 
@@ -171,7 +171,6 @@ void Dialog::setcamera(int row, int column)
     //
     while (num > cameras.length()) {
         cameras.push_back(new camera(cameras.length(),ui->b_data_area,ui->display_area));
-        cameras.last()->setImgBuffer(_fileManger.registerPath(cameras.last()->GetID(),"/home/eureka/Pictures/截图"));
         connect_state(cameras.last());
     }
     for(QVector<camera*>::Iterator it = cameras.begin();it != cameras.end();it++){
@@ -298,14 +297,14 @@ void Dialog::timer_event()
         cameras[QRandomGenerator::global()->generate()%cameras.size()]->aok_clicked();
     }
     for(int i =0;i<camNum;i++){
-        _fileManger.nextImg(i);
+        cameras[i]->nextimg();
     }
 }
 
 void Dialog::cvchange(int id,int t)
 {
     if(t==0){
-        t = (id+1) *3;
+        t = (id+1)*3;
         items[t]->setText(QString::number(cameras[id]->GetValueOK()));
     }else{
         t = (id+1)*3;
@@ -366,7 +365,7 @@ void Dialog::on_comboBox_currentIndexChanged(int index)
 void Dialog::on_pushButton_clicked()
 {
     if(!timer->isActive()){
-        timer->start(1000);
+        timer->start(200);
     }
 }
 
@@ -392,13 +391,13 @@ void Dialog::on_update_bt_toggled(bool checked)
 void Dialog::on_up_tree_pressed(const QModelIndex &index)
 {
     if(index.isValid())
-    _fileManger.u_flist_change(index);
+        _fileManger.u_flist_change(index);
 }
 
 void Dialog::on_up_list_pressed(const QModelIndex &index)
 {
     if(index.isValid())
-    _fileManger.u_flist_click(index);
+        _fileManger.u_flist_click(index);
 }
 
 void Dialog::on_up_pressed()
@@ -429,11 +428,15 @@ QPoint Dialog::calculatePos(QWidget *wid,QWidget* end)
     return a;
 }
 
-void Dialog::up_ok_pe()
+void Dialog::up_ok_pe(bool is)
 {
     QPainter pa(ui->up_ok_area);
     QPen pen;
-    pen.setWidth(1);
+    if(is){
+        pen.setWidth(2);
+    }else{
+        pen.setWidth(1);
+    }
     pen.setColor(Qt::transparent);
     pa.setPen(pen);
     pa.setBrush(up_bt_bk);
@@ -447,10 +450,15 @@ void Dialog::up_ok_pe()
 
 }
 
-void Dialog::up_ng_pe()
+void Dialog::up_ng_pe(bool is)
 {
     QPainter pa(ui->up_ng_area);
     QPen pen;
+    if(is){
+        pen.setWidth(2);
+    }else{
+        pen.setWidth(1);
+    }
     pen.setWidth(1);
     pen.setColor(Qt::transparent);
     pa.setPen(pen);
@@ -463,9 +471,3 @@ void Dialog::up_ng_pe()
     pa.setPen(pen);
     pa.drawText(rect,Qt::AlignCenter,"NG");
 }
-
-void Dialog::cameraUpdate(int cid)
-{
-    cameras[cid]->update();
-}
-

@@ -15,6 +15,7 @@ SOURCES += \
     main.cpp \
     dialog.cpp \
     settingpage.cpp \
+    systemconf.cpp \
     vertify_d.cpp
 
 HEADERS += \
@@ -23,6 +24,7 @@ HEADERS += \
     filemanager.h \
     filereader.h \
     settingpage.h \
+    systemconf.h \
     vertify_d.h
 
 FORMS += \

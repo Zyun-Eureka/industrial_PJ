@@ -45,6 +45,8 @@ void FileManager::u_flist_click(const QModelIndex &index)
 {
 #ifdef Q_OS_LINUX
     up_buffer = QImage(f_path+"/"+index.data().toString()).scaled(up_img_size,Qt::KeepAspectRatio);
+#else
+    up_buffer = QImage(f_path+"\\"+index.data().toString()).scaled(up_img_size,Qt::KeepAspectRatio);
 #endif
     if(up_buffer.isNull())return;
     up_c_buffer = up_buffer.scaled(up_buffer.size()/4.0,Qt::KeepAspectRatio);
@@ -58,33 +60,6 @@ void FileManager::u_img_size_change(QSize size)
 {
     up_img_size = size;
     u_flist_click(_index);
-}
-
-QImage *FileManager::registerPath(int cid, QString path)
-{
-    if(camimgloder.find(cid)==camimgloder.end()){
-        camimgloder.insert(cid,FRER());
-    }
-    camimgloder[cid].fr->setPath(path);
-    connect(this,&FileManager::nextimgsig,camimgloder[cid].fr,[=](int sig_cid){
-        if(cid==sig_cid){
-            camimgloder[cid].fr->next();
-        }
-    });
-    connect(camimgloder[cid].fr,&FileReader::Readready,this,[=](){
-        imgReady(cid);
-    });
-    return camimgloder[cid].buffer;
-}
-
-void FileManager::setSize(int cid, QSize size)
-{
-    camimgloder[cid].camSize = size;
-}
-
-void FileManager::nextImg(int cid)
-{
-    nextimgsig(cid);
 }
 
 void FileManager::dirfind(QString path, QStandardItem *root, QIcon icon)
@@ -105,7 +80,8 @@ QString FileManager::itempath(const QModelIndex &index)
     if(index.parent().isValid()){
 #ifdef Q_OS_LINUX
         str=itempath(index.parent())+"/"+str;
-#elif false
+#else
+        str=itempath(index.parent())+"\\"+str;
 #endif
     }
     return str;

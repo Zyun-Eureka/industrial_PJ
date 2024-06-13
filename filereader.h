@@ -13,11 +13,16 @@ public:
     explicit FileReader(QObject *parent = nullptr);
     void setImgBuffer(QImage *);
     void setPath(QString);
-    bool next();
+    QString getpath(){return path;}
+    bool next(bool = false);
     void scan();
+    void setSize(QSize);
+    int x;
+    int y;
 signals:
     void Readready();
 private:
+    QSize size;
     QDir dir;
     QImage *img;
     QString path;

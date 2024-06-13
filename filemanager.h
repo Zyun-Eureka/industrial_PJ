@@ -12,30 +12,30 @@
 #include <QIcon>
 #include <QModelIndex>
 
-#include <QImage>
-#include <QThread>
-#include "filereader.h"
+//#include <QImage>
+//#include <QThread>
+//#include "filereader.h"
 
-struct FRER
-{
-    FRER() {
-        buffer = new QImage();
-        thread = new QThread();
-        fr = new FileReader();
-        fr->setImgBuffer(buffer);
-        fr->moveToThread(thread);
-        thread->start();
-    }
-    ~FRER() {}
-    FileReader* fr;
-    QImage* buffer;
-    QSize camSize;
-    QThread* thread;
-    void deleteLater(){
-        if(buffer!=nullptr)delete buffer;
-        if(thread!=nullptr)delete thread;
-    }
-};
+//struct FRER
+//{
+//    FRER() {
+//        buffer = new QImage();
+//        thread = new QThread();
+//        fr = new FileReader();
+//        fr->setImgBuffer(buffer);
+//        fr->moveToThread(thread);
+//        thread->start();
+//    }
+//    ~FRER() {}
+//    FileReader* fr;
+//    QImage* buffer;
+//    QSize camSize;
+//    QThread* thread;
+//    void deleteLater(){
+//        if(buffer!=nullptr)delete buffer;
+//        if(thread!=nullptr)delete thread;
+//    }
+//};
 
 class FileManager : public QObject
 {
@@ -55,20 +55,20 @@ public:
     QImage up_c_buffer;
     //camera load
     //QMap<QObject*,FRER> ciloders;
-    QMap<int,FRER> camimgloder;
+//    QMap<int,FRER> camimgloder;
     //
 //    QMap<int,FileReader*> Readers;
 //    QMap<int,QImage*> camera_buffer;
 //    QMap<int,QSize> camera_size;
-    QImage* registerPath(int cid, QString path);
-    void setSize(int cid,QSize size);
+//    QImage* registerPath(int cid, QString path);
+//    void setSize(int cid,QSize size);
     void removePath(int cid);
 
-    void nextImg(int cid);
+//    void nextImg(int cid);
 signals:
     void up_img_update();
-    void imgReady(int cid);
-    void nextimgsig(int sig_cid);
+//    void imgReady(int cid);
+//    void nextimgsig(int sig_cid);
 private slots:
 
 private:

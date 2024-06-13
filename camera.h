@@ -18,6 +18,11 @@
 #include <QPainter>
 #include <QEvent>
 
+#include "filereader.h"
+#include <QThread>
+
+#include <QFileDialog>
+
 //窗口状态:正常，最大化，隐藏，未在范围内
 enum WINSTATE{_Normal = 0,_Max,_Hide,_Out};
 
@@ -39,7 +44,6 @@ public:
 
     int GetValueOK(){return value_OK;}
     int GetValueNG(){return value_NG;}
-    void setImgBuffer(QImage*);
     int GetID(){return ID;}
     static double calculate(long OK,long NG){
         if(NG==0)return 100;
@@ -60,17 +64,22 @@ public:
     //
     void closecamera();
     void p_StateChange(WINSTATE state);
+
+    void setPath(QString path);
+    QString getPath();
+
+    void nextimg();
 signals:
     void valueChange(int cid,int type);
     void changeState(int myid,WINSTATE state);
-
+    void sig_next(bool = false);
 private slots:
     void StateChange(int cid,WINSTATE state);
 private:
-    //临时内容
-    QString tmp_str;
+    //img load
+    QThread* thread;
+    FileReader reader;
 
-    QString path;
     int value_OK;
     int value_NG;
     //窗口状态

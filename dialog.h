@@ -83,14 +83,16 @@ private slots:
 
     void on_next_pressed();
 
-    void cameraUpdate(int);
+//    void cameraUpdate(int);
 
 private:
 
+    //
     QPoint calculatePos(QWidget *, QWidget *en);
-    void up_ok_pe();
-    void up_ng_pe();
-
+    void up_ok_pe(bool = false);
+    void up_ng_pe(bool = false);
+    int mouseArea;
+    //
 
     int up_bt_page;
     int camNum;
