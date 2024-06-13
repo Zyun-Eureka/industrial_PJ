@@ -31,7 +31,7 @@ class camera : public QWidget
     Q_OBJECT
 
 public:
-    explicit camera(QString ID,QWidget *state_area,QWidget *parent = nullptr);
+    explicit camera(int ID,QWidget *state_area,QWidget *parent = nullptr);
     ~camera();
 
 
@@ -39,7 +39,8 @@ public:
 
     int GetValueOK(){return value_OK;}
     int GetValueNG(){return value_NG;}
-    QString GetID(){return ID;}
+    void setImgBuffer(QImage*);
+    int GetID(){return ID;}
     static double calculate(long OK,long NG){
         if(NG==0)return 100;
         double tmp = OK+NG;
@@ -61,10 +62,10 @@ public:
     void p_StateChange(WINSTATE state);
 signals:
     void valueChange(int cid,int type);
-    void changeState(QString myid,WINSTATE state);
+    void changeState(int myid,WINSTATE state);
 
 private slots:
-    void StateChange(QString cid,WINSTATE state);
+    void StateChange(int cid,WINSTATE state);
 private:
     //临时内容
     QString tmp_str;
@@ -75,7 +76,8 @@ private:
     //窗口状态
     WINSTATE winState;
 
-    QString ID;
+    int ID;
+    QImage* img;
     Ui::camera *ui;
 };
 

@@ -12,14 +12,10 @@
 
 #include "settingpage.h"
 #include "filemanager.h"
-
 #include <QTableWidgetItem>
+#include <QMouseEvent>
 
-// 这个是程序主页面
-// 实现功能有相机布局自动生成
-// 图表统计和画图功能
-// 程序制作 钟明辉 & 黄志涣
-
+#include <QWidget>
 
 #define TableDataNull "--"
 #define SystemDateFormat "yyyy-MM-dd hh:mm:ss"
@@ -42,7 +38,7 @@ public:
     ~Dialog();
 
 signals:
-    void d_changeState(QString myid,WINSTATE state);
+    void d_changeState(int myid,WINSTATE state);
 
 
 private:
@@ -87,7 +83,15 @@ private slots:
 
     void on_next_pressed();
 
+    void cameraUpdate(int);
+
 private:
+
+    QPoint calculatePos(QWidget *, QWidget *en);
+    void up_ok_pe();
+    void up_ng_pe();
+
+
     int up_bt_page;
     int camNum;
     unsigned long long all_NG,all_OK,com_NG,com_OK;
@@ -97,6 +101,13 @@ private:
     void updateNum();
     void updateCom();
     const QStringList diagram_color = {"#00B000","#FF3131"};
+    QPoint dialog_point;
+    QPoint up_bta_pos;
+    bool up_img_click;
+
+    QWidget *mv_img;
+
+    QColor up_bt_bk;
     Ui::Dialog *ui;
 };
 #endif // DIALOG_H

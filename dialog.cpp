@@ -20,6 +20,8 @@ Dialog::Dialog(QWidget *parent)
     initTable();
 
     timer = new QTimer();
+    mv_img = new QWidget(this);
+    mv_img->hide();
     connect(timer,SIGNAL(timeout()),this,SLOT(timer_event()));
 
     connect(&settings,SIGNAL(change(int,int)),this,SLOT(setting_c(int,int)));
@@ -28,11 +30,20 @@ Dialog::Dialog(QWidget *parent)
         ui->up_img->update();
     });
 
+    connect(&_fileManger,&FileManager::imgReady,this,&Dialog::cameraUpdate);
+
     ui->AllData->installEventFilter(this);
     ui->SubData->installEventFilter(this);
+    //
     ui->up_tree->installEventFilter(this);
     ui->update_main->installEventFilter(this);
     ui->up_img->installEventFilter(this);
+    ui->update_main->installEventFilter(this);
+    ui->up_ok_area->installEventFilter(this);
+    ui->up_ng_area->installEventFilter(this);
+    mv_img->installEventFilter(this);
+
+
     setWindowFlags(Qt::WindowMaximizeButtonHint|Qt::WindowCloseButtonHint);
 
     all_NG=all_OK=com_NG=com_OK=0;
@@ -44,6 +55,8 @@ Dialog::Dialog(QWidget *parent)
     ui->up_list->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->up_list->setModel(_fileManger.u_fmodel);
     ui->main_area->setCurrentIndex(0);
+
+    up_bt_bk.setRgb(26,95,180);
 }
 
 Dialog::~Dialog()
@@ -56,15 +69,19 @@ Dialog::~Dialog()
     delete ui;
 }
 
+
 bool Dialog::eventFilter(QObject *obj, QEvent *e){
     if(e->type()==QEvent::Paint){
         if(obj == ui->up_img){
             QPainter pa(ui->up_img);
             pa.drawImage(_fileManger.up_img_x,_fileManger.up_img_y,_fileManger.up_buffer);
-//            pa.setBrush(Qt::white);
-//            int widths = 60;
-//            pa.drawRect(ui->up_img->width()/2.0-widths,ui->up_img->height()-widths-10,widths*2,widths);
-//            pa.drawText(QRect(ui->up_img->width()/2.0-widths,ui->up_img->height()-widths-10,widths*2,widths),"<  >",);
+        }else if(obj == ui->up_ok_area){
+            up_ok_pe();
+        }else if(obj == ui->up_ng_area){
+            up_ng_pe();
+        }else if(obj == mv_img){
+            QPainter pa(mv_img);
+            pa.drawImage(0,0,_fileManger.up_c_buffer);
         }
         QVector<double> value;
         if(obj == ui->AllData){
@@ -122,10 +139,24 @@ bool Dialog::eventFilter(QObject *obj, QEvent *e){
         }else if(obj==ui->up_img){
             _fileManger.u_img_size_change(ui->up_img->size());
         }
+        dialog_point = calculatePos(ui->update_main,ui->main_area);
     }else if(e->type()==QEvent::ContextMenu){
         if(obj==ui->up_tree){
             _fileManger.getUpdataPath();
         }
+    }else if(e->type()==QEvent::MouseButtonPress){
+        if(obj == ui->update_main){
+            up_img_click = ui->up_img->geometry().contains(static_cast<QMouseEvent*>(e)->pos());
+            mv_img->resize(_fileManger.up_c_buffer.size());
+        }
+    }else if(e->type()==QEvent::MouseMove){
+        mv_img->move(static_cast<QMouseEvent*>(e)->pos()+dialog_point-QPoint(mv_img->width()/2.0,mv_img->height()/2.0));
+        if(up_img_click && obj == ui->update_main){
+            mv_img->show();
+        }
+    }else if(e->type()==QEvent::MouseButtonRelease){
+        up_img_click = false;
+        mv_img->hide();
     }
     e_f_end:
     return QDialog::eventFilter(obj,e);
@@ -139,7 +170,8 @@ void Dialog::setcamera(int row, int column)
     updataTable(num);
     //
     while (num > cameras.length()) {
-        cameras.push_back(new camera(QString::number(cameras.length()),ui->b_data_area,ui->display_area));
+        cameras.push_back(new camera(cameras.length(),ui->b_data_area,ui->display_area));
+        cameras.last()->setImgBuffer(_fileManger.registerPath(cameras.last()->GetID(),"/home/eureka/Pictures/截图"));
         connect_state(cameras.last());
     }
     for(QVector<camera*>::Iterator it = cameras.begin();it != cameras.end();it++){
@@ -228,8 +260,8 @@ void Dialog::updataTable(int count)
         ui->tableWidget->setItem(i,0,items[j]);
         ui->tableWidget->setItem(i,1,items[j+1]);
         ui->tableWidget->setItem(i,2,items[j+2]);
-        vhs[i]->setText(QString::number(i));
-        ui->comboBox->addItem("相机 "+QString::number(i));
+        vhs[i]->setText(QString::number(i+1));
+        ui->comboBox->addItem("相机 "+QString::number(i+1));
         ui->tableWidget->setVerticalHeaderItem(i,vhs[i]);
     }
     //添加总数栏
@@ -245,15 +277,15 @@ void Dialog::updataTable(int count)
 
 void Dialog::connect_state(camera * obj)
 {
-    connect(obj,SIGNAL(changeState(QString,WINSTATE)),this,SIGNAL(d_changeState(QString,WINSTATE)));
-    connect(this,SIGNAL(d_changeState(QString,WINSTATE)),obj,SLOT(StateChange(QString,WINSTATE)));
+    connect(obj,SIGNAL(changeState(int,WINSTATE)),this,SIGNAL(d_changeState(int,WINSTATE)));
+    connect(this,SIGNAL(d_changeState(int,WINSTATE)),obj,SLOT(StateChange(int,WINSTATE)));
     connect(obj,SIGNAL(valueChange(int,int)),this,SLOT(cvchange(int,int)));
 }
 
 void Dialog::disconnect_state(camera *obj)
 {
-    disconnect(obj,SIGNAL(changeState(QString,WINSTATE)),this,SIGNAL(d_changeState(QString,WINSTATE)));
-    disconnect(this,SIGNAL(d_changeState(QString,WINSTATE)),obj,SLOT(StateChange(QString,WINSTATE)));
+    disconnect(obj,SIGNAL(changeState(int,WINSTATE)),this,SIGNAL(d_changeState(int,WINSTATE)));
+    disconnect(this,SIGNAL(d_changeState(int,WINSTATE)),obj,SLOT(StateChange(int,WINSTATE)));
     disconnect(obj,SIGNAL(valueChange(int,int)),this,SLOT(cvchange(int,int)));
 }
 
@@ -264,6 +296,9 @@ void Dialog::timer_event()
         cameras[QRandomGenerator::global()->generate()%cameras.size()]->ang_clicked();
     }else{
         cameras[QRandomGenerator::global()->generate()%cameras.size()]->aok_clicked();
+    }
+    for(int i =0;i<camNum;i++){
+        _fileManger.nextImg(i);
     }
 }
 
@@ -331,7 +366,7 @@ void Dialog::on_comboBox_currentIndexChanged(int index)
 void Dialog::on_pushButton_clicked()
 {
     if(!timer->isActive()){
-        timer->start(100);
+        timer->start(1000);
     }
 }
 
@@ -360,13 +395,11 @@ void Dialog::on_up_tree_pressed(const QModelIndex &index)
     _fileManger.u_flist_change(index);
 }
 
-
 void Dialog::on_up_list_pressed(const QModelIndex &index)
 {
     if(index.isValid())
     _fileManger.u_flist_click(index);
 }
-
 
 void Dialog::on_up_pressed()
 {
@@ -377,7 +410,6 @@ void Dialog::on_up_pressed()
     ui->up_list->setCurrentIndex(ui->up_list->model()->index(row,0));
 }
 
-
 void Dialog::on_next_pressed()
 {
     int row = ui->up_list->currentIndex().row()+1;
@@ -385,5 +417,55 @@ void Dialog::on_next_pressed()
     if(row == ui->up_list->model()->rowCount())row = 0;
     ui->up_list->pressed(ui->up_list->model()->index(row,0));
     ui->up_list->setCurrentIndex(ui->up_list->model()->index(row,0));
+}
+
+QPoint Dialog::calculatePos(QWidget *wid,QWidget* end)
+{
+    if(wid==end)return wid->pos();
+    QPoint a = wid->pos();
+    if(static_cast<QWidget*>(wid->parent())!=nullptr){
+        a+=calculatePos(static_cast<QWidget*>(wid->parent()),end);
+    }
+    return a;
+}
+
+void Dialog::up_ok_pe()
+{
+    QPainter pa(ui->up_ok_area);
+    QPen pen;
+    pen.setWidth(1);
+    pen.setColor(Qt::transparent);
+    pa.setPen(pen);
+    pa.setBrush(up_bt_bk);
+    QRect rect = ui->up_ok_area->rect();
+    rect.setX(rect.x()-pen.width());
+    rect.setY(rect.y()-pen.width());
+    pa.drawRoundedRect(rect,10,10);
+    pen.setColor(Qt::white);
+    pa.setPen(pen);
+    pa.drawText(rect,Qt::AlignCenter,"OK");
+
+}
+
+void Dialog::up_ng_pe()
+{
+    QPainter pa(ui->up_ng_area);
+    QPen pen;
+    pen.setWidth(1);
+    pen.setColor(Qt::transparent);
+    pa.setPen(pen);
+    pa.setBrush(up_bt_bk);
+    QRect rect = ui->up_ng_area->rect();
+    rect.setX(rect.x()-pen.width());
+    rect.setY(rect.y()-pen.width());
+    pa.drawRoundedRect(rect,10,10);
+    pen.setColor(Qt::white);
+    pa.setPen(pen);
+    pa.drawText(rect,Qt::AlignCenter,"NG");
+}
+
+void Dialog::cameraUpdate(int cid)
+{
+    cameras[cid]->update();
 }
 

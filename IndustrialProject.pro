@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     camera.cpp \
     filemanager.cpp \
+    filereader.cpp \
     main.cpp \
     dialog.cpp \
     settingpage.cpp \
@@ -20,6 +21,7 @@ HEADERS += \
     camera.h \
     dialog.h \
     filemanager.h \
+    filereader.h \
     settingpage.h \
     vertify_d.h
 

@@ -3,7 +3,7 @@
 
 #include <QDebug>
 
-camera::camera(QString ID, QWidget *state_area, QWidget *parent)
+camera::camera(int ID, QWidget *state_area, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::camera)
 {
@@ -12,7 +12,7 @@ camera::camera(QString ID, QWidget *state_area, QWidget *parent)
     this->ID = ID;
     state = new QLabel(state_area);
     state->setStyleSheet("");
-    ui->ID->setText(QString("ID:%1").arg(ID));
+    ui->ID->setText(QString("相机ID :%1").arg(ID+1));
 
     value_NG = 0;
     value_OK = 0;
@@ -22,11 +22,17 @@ camera::camera(QString ID, QWidget *state_area, QWidget *parent)
 
     ui->frame_top->installEventFilter(this);
     tmp_str = ID;
+    img = nullptr;
 }
 
 camera::~camera()
 {
     delete ui;
+}
+
+void camera::setImgBuffer(QImage *img)
+{
+    this->img = img;
 }
 
 void camera::show()
@@ -47,10 +53,13 @@ bool camera::eventFilter(QObject *watched, QEvent *event)
             pa.setBrush(Qt::black);
             //设置画笔颜色
             QPen pen;
-            pen.setColor(Qt::red);
+//            pen.setColor(Qt::red);
             pa.setPen(pen);
             //因为画笔也有厚度所以画面会溢出，可以减去画笔厚度
-            pa.drawRect(0,0,ui->display->width()-pen.width()*2,ui->display->height()-pen.width()*2);
+            pa.drawRoundedRect(0,0,ui->display->width()-pen.width()*2,ui->display->height()-pen.width()*2,10,10);
+            if(img!=nullptr){
+                pa.drawImage(0,0,*img);
+            }
             //此处可以通过id或者sting变量区分摄像头
             //我在h文件声明了个tmp_str初始化为相机ID
             //if(tmp_str==""){//code}
@@ -78,7 +87,7 @@ void camera::ang_clicked()
     if(!ui->enabled_bt->isChecked())return;
     value_NG++;
     state->setStyleSheet("image: url(:/SVG/no.svg);");
-    emit valueChange(this->ID.toInt(),1);
+    emit valueChange(this->ID,1);
 }
 
 
@@ -87,7 +96,7 @@ void camera::aok_clicked()
     if(!ui->enabled_bt->isChecked())return;
     value_OK++;
     state->setStyleSheet("image: url(:/SVG/yes.svg);");
-    emit valueChange(this->ID.toInt(),0);
+    emit valueChange(this->ID,0);
 }
 
 void camera::closecamera()
@@ -100,7 +109,7 @@ void camera::p_StateChange(WINSTATE state)
     StateChange(ID,state);
 }
 
-void camera::StateChange(QString cid,WINSTATE s)
+void camera::StateChange(int cid,WINSTATE s)
 {
     if(cid != ID){
         if(winState==WINSTATE::_Out)return;
@@ -140,7 +149,7 @@ void camera::StateChange(QString cid,WINSTATE s)
             break;
         case WINSTATE::_Normal:
             winState = WINSTATE::_Normal;
-            StateChange("",WINSTATE::_Normal);
+            StateChange(-1,WINSTATE::_Normal);
             break;
         case WINSTATE::_Hide:
             break;
@@ -151,4 +160,3 @@ void camera::StateChange(QString cid,WINSTATE s)
     }
     winState = s;
 }
-
