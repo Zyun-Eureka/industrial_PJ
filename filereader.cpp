@@ -20,11 +20,13 @@ void FileReader::setPath(QString path)
     dir.setPath(path);
     files.clear();
     scan();
+    next();
 }
 
 bool FileReader::next(bool change)
 {
     if(img==nullptr)return false;
+    if(change&&img->isNull())return false;
     if(files.isEmpty())return false;
     if(!change){
         *img =QImage(dir.path()+"/"+files.front()).scaled(size,Qt::KeepAspectRatio);

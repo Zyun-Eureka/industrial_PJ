@@ -1,29 +1,28 @@
 #include "systemconf.h"
 
+#include <QDebug>
+
 systemConf::systemConf(QObject *parent)
     : QObject{parent}
 {
-   //set.setPath(QSettings::IniFormat,QSettings::UserScope,"ind.conf");
 }
 
 void systemConf::init()
 {
     mutex.lock();
-    set.beginGroup("setings");
-    int layout = set.value("VLayout").toInt();
-    int row,colum;
-    if(layout == 5){
-        row = set.value("VRow").toInt();
-        colum = set.value("VColum").toInt();
-    }
+    values.clear();
+    set.beginGroup(CONF_SETTING_GROUP);
+    values[CONF_SETTING_VLAYOUT] = set.value(CONF_SETTING_VLAYOUT);
+    int tmp = values[CONF_SETTING_VLAYOUT].toInt();
+    values[CONF_SETTING_ROW] = set.value(CONF_SETTING_ROW);
+    values[CONF_SETTING_COLUMN] = set.value(CONF_SETTING_COLUMN);
     set.endGroup();
-    set.beginGroup("camera");
-    int cameraNum = set.value("num").toInt();
-    QStringList path_list;
-    QVector<bool> enable;
-    for(int i = 0;i<cameraNum;i++){
-        path_list << set.value("Path"+QString::number(i)).toString();
-        enable.push_back(set.value("enable"+QString::number(i)).toInt());
+    set.beginGroup(CONF_CAMERA_GROUP);
+    values[CONF_CAMERA_NUM] = set.value(CONF_CAMERA_NUM).toInt();
+    tmp = values[CONF_CAMERA_NUM].toInt();
+    for(int i = 0;i<tmp;i++){
+        values[CONF_CAMERA_PATH+QString::number(i)]=set.value(CONF_CAMERA_PATH+QString::number(i));
+        values["cam_E"+QString::number(i)]=set.value("cam_E"+QString::number(i));
     }
     set.endGroup();
     mutex.unlock();
@@ -38,5 +37,6 @@ void systemConf::save(QString group,QString key,QVariant value)
     mutex.unlock();
 }
 
-QSettings systemConf::set = QSettings(QSettings::IniFormat,QSettings::UserScope,"ind.conf");
+QSettings systemConf::set = QSettings("ind.conf",QSettings::IniFormat);
 QMutex systemConf::mutex = QMutex();
+QMap<QString,QVariant> systemConf::values = QMap<QString,QVariant>();

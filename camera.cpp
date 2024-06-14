@@ -20,7 +20,7 @@ camera::camera(int ID, QWidget *state_area, QWidget *parent)
     //注册事件循环监听
     ui->display->installEventFilter(this);
     ui->frame_top->installEventFilter(this);
-
+    ui->img->installEventFilter(this);
 
     img = new QImage();
     reader.setImgBuffer(img);
@@ -29,8 +29,12 @@ camera::camera(int ID, QWidget *state_area, QWidget *parent)
     thread->start();
     connect(this,&camera::sig_next,&reader,&FileReader::next);
     connect(&reader,&FileReader::Readready,this,[&](){
-        this->update();
+        ui->img->update();
     });
+
+    if(systemConf::values[CONF_CAMERA_NUM].toInt()>ID){
+        setPath(systemConf::values[CONF_CAMERA_PATH+QString::number(ID)].toString());
+    }
 }
 
 camera::~camera()
@@ -50,23 +54,10 @@ void camera::show()
 bool camera::eventFilter(QObject *watched, QEvent *event)
 {
     if(watched == ui->display){
-        if(event->type()==QEvent::Paint){
-            //qDebug()<<this<<"paint"<<ID;
-            //控件绘制实现
-            QPainter pa(ui->display);
-            pa.setBrush(Qt::black);
-            //设置画笔颜色
-            QPen pen;
-            pa.setPen(pen);
-            //因为画笔也有厚度所以画面会溢出，可以减去画笔厚度
-            pa.drawRoundedRect(0,0,ui->display->width()-pen.width()*2,ui->display->height()-pen.width()*2,10,10);
-            if(img!=nullptr){
-                pa.drawImage(reader.x,reader.y,*img);
-            }
-        }else if(event->type()==QEvent::Resize){
+        if(event->type()==QEvent::Resize){
             reader.setSize(ui->display->size());
         }else if(event->type()==QEvent::ContextMenu){
-            QString str = QFileDialog::getExistingDirectory(nullptr,"open","",QFileDialog::ShowDirsOnly);
+            QString str = QFileDialog::getExistingDirectory(nullptr,"open",reader.getpath(),QFileDialog::ShowDirsOnly);
             if(!str.isEmpty()){
                 setPath(str);
             }
@@ -79,6 +70,13 @@ bool camera::eventFilter(QObject *watched, QEvent *event)
                 winState = WINSTATE::_Max;
             }
             emit changeState(ID,winState);
+        }
+    }else if(watched == ui->img){
+        if(event->type()==QEvent::Paint){
+            if(img!=nullptr){
+                QPainter pa(ui->img);
+                pa.drawImage(reader.x,reader.y,*img);
+            }
         }
     }
     return QWidget::eventFilter(watched,event);
@@ -114,6 +112,7 @@ void camera::p_StateChange(WINSTATE state)
 void camera::setPath(QString path)
 {
     reader.setPath(path);
+    systemConf::save(CONF_CAMERA_GROUP,CONF_CAMERA_PATH+QString::number(ID),path);
 }
 
 QString camera::getPath()
@@ -156,7 +155,7 @@ void camera::StateChange(int cid,WINSTATE s)
     }else{
         switch (s) {
         case WINSTATE::_Out:
-            winState == WINSTATE::_Out;
+            winState = WINSTATE::_Out;
             hide();
             if(state!=nullptr){
                 state->hide();

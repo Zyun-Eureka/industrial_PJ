@@ -12,6 +12,8 @@
 // 使用 vertify_d 进行身份验证
 // 程序制作 钟明辉 & 黄志涣
 
+#include "systemconf.h"
+
 namespace Ui {
 class SettingPage;
 }
@@ -66,6 +68,8 @@ private:
     int row_t;
     int column_t;
     bool saveSate;
+
+    QList<QPushButton*> btlist;
     Ui::SettingPage *ui;
 };
 

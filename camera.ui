@@ -156,6 +156,9 @@ border-radius:0px;
            <property name="checkable">
             <bool>true</bool>
            </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
         </layout>
@@ -183,7 +186,7 @@ border-radius:0px;
           <number>0</number>
          </property>
          <property name="topMargin">
-          <number>0</number>
+          <number>5</number>
          </property>
          <property name="rightMargin">
           <number>0</number>
@@ -212,19 +215,41 @@ border-radius:0px;
             <property name="bottomMargin">
              <number>3</number>
             </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="display">
+            <item row="0" column="1">
+             <widget class="QWidget" name="display" native="true">
               <property name="styleSheet">
-               <string notr="true">color: rgb(255, 255, 255);
-border:0px solid;
-border-radius:3px;</string>
+               <string notr="true">border:0xp solid;
+border-radius:15px;
+background-color: rgb(0, 0, 0);</string>
               </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
+              <layout class="QGridLayout" name="gridLayout_2">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QLabel" name="img">
+                 <property name="styleSheet">
+                  <string notr="true">border:0xp solid;
+border-radius:15px;</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>

@@ -53,22 +53,9 @@ public:
     double up_img_y;
     QImage up_buffer;
     QImage up_c_buffer;
-    //camera load
-    //QMap<QObject*,FRER> ciloders;
-//    QMap<int,FRER> camimgloder;
-    //
-//    QMap<int,FileReader*> Readers;
-//    QMap<int,QImage*> camera_buffer;
-//    QMap<int,QSize> camera_size;
-//    QImage* registerPath(int cid, QString path);
-//    void setSize(int cid,QSize size);
-    void removePath(int cid);
 
-//    void nextImg(int cid);
 signals:
     void up_img_update();
-//    void imgReady(int cid);
-//    void nextimgsig(int sig_cid);
 private slots:
 
 private:

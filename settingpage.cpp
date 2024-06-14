@@ -15,6 +15,12 @@ SettingPage::SettingPage(QWidget *parent)
     saveSate = true;
     setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint);
     connect(&v,SIGNAL(success()),this,SLOT(vertify_success()));
+
+    btlist.push_back(ui->style);
+    btlist.push_back(ui->style_1);
+    btlist.push_back(ui->style_2);
+    btlist.push_back(ui->style_3);
+    btlist.push_back(ui->udefine);
 }
 
 SettingPage::~SettingPage()
@@ -62,7 +68,15 @@ int SettingPage::exec()
 
 void SettingPage::sysn()
 {
+    unlock();
+    int tmp = systemConf::values[CONF_SETTING_VLAYOUT].toInt();
+    row = systemConf::values[CONF_SETTING_ROW].toInt();
+    column = systemConf::values[CONF_SETTING_COLUMN].toInt();
+    ui->row->setValue(row);
+    ui->column->setValue(column);
+    btlist[tmp]->click();
     on_save_clicked();
+    lock();
 }
 
 void SettingPage::on_style_clicked()
@@ -78,13 +92,11 @@ void SettingPage::on_style_1_clicked()
     setColumn(2);
 }
 
-
 void SettingPage::on_style_2_clicked()
 {
     setRow(2);
     setColumn(3);
 }
-
 
 void SettingPage::on_style_3_clicked()
 {
@@ -122,6 +134,14 @@ void SettingPage::on_save_clicked()
     row = row_t;
     column = column_t;
     emit change(row,column);
+    systemConf::save(CONF_CAMERA_GROUP,CONF_CAMERA_NUM,row*column);
+    systemConf::save(CONF_SETTING_GROUP,CONF_SETTING_ROW,row);
+    systemConf::save(CONF_SETTING_GROUP,CONF_SETTING_COLUMN,column);
+    for(int i = 0;i<btlist.size();i++){
+        if(btlist[i]->isChecked()){
+            systemConf::save(CONF_SETTING_GROUP,CONF_SETTING_VLAYOUT,i);
+        }
+    }
     saveSate = true;
     close();
 }

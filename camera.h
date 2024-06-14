@@ -19,6 +19,7 @@
 #include <QEvent>
 
 #include "filereader.h"
+#include "systemconf.h"
 #include <QThread>
 
 #include <QFileDialog>
@@ -31,7 +32,7 @@ class camera;
 
 }
 
-class camera : public QWidget
+class camera :public QWidget
 {
     Q_OBJECT
 

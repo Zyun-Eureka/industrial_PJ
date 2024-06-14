@@ -43,12 +43,12 @@ void FileManager::u_flist_change(const QModelIndex &index)
 
 void FileManager::u_flist_click(const QModelIndex &index)
 {
+    if(index.data().isNull())return;
 #ifdef Q_OS_LINUX
     up_buffer = QImage(f_path+"/"+index.data().toString()).scaled(up_img_size,Qt::KeepAspectRatio);
 #else
     up_buffer = QImage(f_path+"\\"+index.data().toString()).scaled(up_img_size,Qt::KeepAspectRatio);
 #endif
-    if(up_buffer.isNull())return;
     up_c_buffer = up_buffer.scaled(up_buffer.size()/4.0,Qt::KeepAspectRatio);
     _index = index;
     up_img_x = (up_img_size.width()-up_buffer.width())/2.0;

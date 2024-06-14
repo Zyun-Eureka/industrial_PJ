@@ -20,6 +20,7 @@ Dialog::Dialog(QWidget *parent)
     initTable();
 
     timer = new QTimer();
+    timer->start(100);
     mv_img = new QWidget(this);
     mv_img->hide();
     connect(timer,SIGNAL(timeout()),this,SLOT(timer_event()));
@@ -29,8 +30,6 @@ Dialog::Dialog(QWidget *parent)
     connect(&_fileManger,&FileManager::up_img_update,this,[&](){
         ui->up_img->update();
     });
-
-    //connect(&_fileManger,&FileManager::imgReady,this,&Dialog::cameraUpdate);
 
     ui->AllData->installEventFilter(this);
     ui->SubData->installEventFilter(this);
@@ -48,7 +47,7 @@ Dialog::Dialog(QWidget *parent)
 
     all_NG=all_OK=com_NG=com_OK=0;
     settings.sysn();
-
+    //
     ui->up_tree->setHeaderHidden(true);
     ui->up_tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->up_tree->setModel(_fileManger.u_model);
@@ -175,8 +174,6 @@ void Dialog::setcamera(int row, int column)
     }
     for(QVector<camera*>::Iterator it = cameras.begin();it != cameras.end();it++){
         (*it)->p_StateChange(WINSTATE::_Out);
-        //(*it)->hide();
-        //(*it)->state->hide();
     }
     //清除原先位置样式
     while (layouts_c.length()>0) {
@@ -291,13 +288,13 @@ void Dialog::disconnect_state(camera *obj)
 void Dialog::timer_event()
 {
     ui->Date->setText(QDateTime::currentDateTime().toString(SystemDateFormat));
-    if(QRandomGenerator::global()->generate()%9==1){
-        cameras[QRandomGenerator::global()->generate()%cameras.size()]->ang_clicked();
-    }else{
-        cameras[QRandomGenerator::global()->generate()%cameras.size()]->aok_clicked();
-    }
     for(int i =0;i<camNum;i++){
         cameras[i]->nextimg();
+        if(QRandomGenerator::global()->generate()%9==1){
+            cameras[i]->ang_clicked();
+        }else{
+            cameras[i]->aok_clicked();
+        }
     }
 }
 
@@ -365,7 +362,7 @@ void Dialog::on_comboBox_currentIndexChanged(int index)
 void Dialog::on_pushButton_clicked()
 {
     if(!timer->isActive()){
-        timer->start(200);
+        timer->start(1000);
     }
 }
 

@@ -15,6 +15,8 @@
 #include <QTableWidgetItem>
 #include <QMouseEvent>
 
+#include "systemconf.h"
+
 #include <QWidget>
 
 #define TableDataNull "--"
