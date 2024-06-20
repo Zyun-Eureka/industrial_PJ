@@ -62,6 +62,10 @@ private:
     void connect_state(camera*);
     void disconnect_state(camera*);
 
+    //update
+
+    void toquery();
+
 private slots:
     void timer_event();
     void cvchange(int,int);
@@ -77,20 +81,28 @@ private slots:
 
     void on_update_bt_toggled(bool checked);
 
-    void on_up_tree_pressed(const QModelIndex &index);
+//    void on_up_tree_pressed(const QModelIndex &index);
 
-    void on_up_list_pressed(const QModelIndex &index);
+//    void on_up_list_pressed(const QModelIndex &index);
 
-    void on_up_pressed();
+//    void on_up_pressed();
 
-    void on_next_pressed();
+//    void on_next_pressed();
 
 //    void cameraUpdate(int);
 
+    void on_up_camBox_currentIndexChanged(int index);
+
 private:
 
+    //update
+    int kpos,npos;
+    QVector<QWidget*> all_imgs;
+    QVector<QWidget*> ok_imgs;
+    QVector<QWidget*> ng_imgs;
+
     //
-    QPoint calculatePos(QWidget *, QWidget *en);
+    //QPoint calculatePos(QWidget *, QWidget *en);
     void up_ok_pe(bool = false);
     void up_ng_pe(bool = false);
     int mouseArea;

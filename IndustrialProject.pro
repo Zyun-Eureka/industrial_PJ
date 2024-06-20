@@ -1,4 +1,4 @@
-QT       += core gui multimediawidgets multimedia
+QT       += core gui multimediawidgets multimedia sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,19 +10,23 @@ CONFIG += c++17
 
 SOURCES += \
     camera.cpp \
+    camerasql.cpp \
     filemanager.cpp \
     filereader.cpp \
     main.cpp \
     dialog.cpp \
+    opencv.cpp \
     settingpage.cpp \
     systemconf.cpp \
     vertify_d.cpp
 
 HEADERS += \
     camera.h \
+    camerasql.h \
     dialog.h \
     filemanager.h \
     filereader.h \
+    opencv.h \
     settingpage.h \
     systemconf.h \
     vertify_d.h

@@ -19,8 +19,9 @@ void FileReader::setPath(QString path)
     this->path = path;
     dir.setPath(path);
     files.clear();
-    scan();
-    next();
+
+//    scan();
+//    next();
 }
 
 bool FileReader::next(bool change)
@@ -57,4 +58,14 @@ void FileReader::setSize(QSize size)
 {
     this->size = size;
     next(true);
+}
+
+void FileReader::initFolder(QString id)
+{
+    dir.mkdir(id);
+    QDir tmp = dir;
+    tmp.cd(id);
+    tmp.mkdir(OK_FOLDER);
+    tmp.mkdir(NG_FOLDER);
+    sql.init(tmp.path()+"/mydb.dat");
 }

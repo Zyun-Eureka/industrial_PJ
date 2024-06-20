@@ -6,6 +6,12 @@
 #include <QImage>
 #include <QDir>
 
+#include "camerasql.h"
+
+
+#define OK_FOLDER "OK"
+#define NG_FOLDER "NG"
+
 class FileReader : public QObject
 {
     Q_OBJECT
@@ -17,6 +23,8 @@ public:
     bool next(bool = false);
     void scan();
     void setSize(QSize);
+
+    void initFolder(QString id);
     int x;
     int y;
 signals:
@@ -27,6 +35,7 @@ private:
     QImage *img;
     QString path;
     QStringList files;
+    cameraSql sql;
 };
 
 #endif // FILEREADER_H

@@ -70,6 +70,10 @@ public:
     QString getPath();
 
     void nextimg();
+
+    void initfolder();
+    void query();
+    void query(QString);
 signals:
     void valueChange(int cid,int type);
     void changeState(int myid,WINSTATE state);

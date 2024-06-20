@@ -125,6 +125,20 @@ void camera::nextimg()
     sig_next();
 }
 
+void camera::initfolder()
+{
+}
+
+void camera::query()
+{
+
+}
+
+void camera::query(QString)
+{
+
+}
+
 void camera::StateChange(int cid,WINSTATE s)
 {
     if(cid != ID){
