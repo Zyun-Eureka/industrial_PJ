@@ -5,42 +5,76 @@
 cameraSql::cameraSql(QObject *parent)
     : QObject{parent}
 {
-    //    db = QSqlDatabase::addDatabase()
+//    this->cid = cid;
 }
 
-bool cameraSql::init(QString name)
+bool cameraSql::init(QString sqlpath, QString imgPath)
 {
-    db = QSqlDatabase::addDatabase(name);
+    qDebug()<<"init func";
+    return false;
+    db = QSqlDatabase::addDatabase(sqlpath,"QSQLITE");
     if(!db.open())return false;
     //
     QSqlQuery query(db);
     query.exec("create table cameraImg(id integer primary key autoincrement,name char(256),time date,cameraId int,imgPath char(256),result boolean)");
+    path = imgPath;
     return true;
 }
 
-bool cameraSql::insertImg(QString name, bool result, QString path)
+bool cameraSql::insertImg(QString imgName, bool result, QString camera_id)
 {
-    QSqlQuery query(db);
-    query.prepare("insert into cameraImg(name,time,cameraId,imgPath,result) values(:0,:1,:2,:3,:4,:5)");
-    query.bindValue(0,name);
-    query.bindValue(1,QDateTime::currentDateTime().toString(""));
-    query.bindValue(2,cid);
-    if(path.isEmpty()){
-        query.bindValue(3,this->path);
-    }else{
-        query.bindValue(3,path);
+    if(!db.isOpen()){
+        return false;
     }
-    query.bindValue(4,result);
-    qDebug()<<query.executedQuery();
+    QSqlQuery query;
+    query.prepare("insert into imgs(camera_id,imgName,time,result) values(:0,:1,:2,:3)");
+    query.bindValue(0,camera_id);
+    query.bindValue(1,imgName);
+    query.bindValue(2,QDateTime::currentDateTime().toString(""));
+    query.bindValue(3,result);
     return query.exec();
 }
 
-QStringList cameraSql::querData(QString querystr)
+bool cameraSql::newCamera(QString cameraId, QString path)
 {
-    QSqlQuery query(db);
-//    query.prepare("select name,imgPath from cameraImg where resualt = :0");
-//    query.bindValue(0,querystr);
-    query.exec(QString("select name,imgPath from cameraImg where %1").arg(querystr));
+    if(!db.isOpen()){
+        return false;
+    }
+    QSqlQuery query;
+    query.prepare("insert into cameras(camera_id,path) values(:0,:1)");
+    query.bindValue(0,cameraId);
+    query.bindValue(1,path);
+    return query.exec();
+}
+
+bool cameraSql::initDB()
+{
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("test.dat");
+    if(!db.open()){
+        qDebug()<<"DB init failed";
+        return false;
+    }
+    initTable();
+    return true;
+}
+
+bool cameraSql::initTable()
+{
+    QSqlQuery query;
+    //"create table cameraImg(id integer primary key autoincrement,name char(256),time date,cameraId int,imgPath char(256),result boolean)"
+    query.exec("create table if not exists cameras(id integer primary key autoincrement,camera_id char(5) primary key,path char(256))");
+    query.exec("create table if not exists imgs(id integer primary key autoincrement,camera_id integer primary key,imgName char(128),time date,result boolean)");
+    return false;
+}
+
+QStringList cameraSql::querImgsName(QString querystr)
+{
+    if(!db.isOpen()){
+    }
+    QSqlQuery query;
+
+    query.exec(QString("select imgName from imgs where %1").arg(querystr));
     while (query.next()) {
         qDebug()<<query.value(0).toString()<<query.value(1).toString();
     }

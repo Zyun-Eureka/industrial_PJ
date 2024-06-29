@@ -1,17 +1,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-//这是相机类的头文件
-//相机类介绍，相机类用于在主页面，初始化为一个个的监视卡片
-//计划用于展示图片，视频流等
-
-//此类与统计数值功能绑定，使用getvalue获取统计到的数值
-//在获取后端数据函数内使用对应相机 ang_clicked aok_clicked 添加异常和正常数值的统计，调用即添加一次数值
-//并会同时触发 valuechange(int 拟定为相机id,int 拟定为数值变更类型 1为异常加1 0为正常加1) 信号
-//到主页面进行数据统计表和图表更新
-//图片加载，本项目拟通过重写控件绘制事件实现加载图片功能，具体说明在 camera.cpp 文件内eventFilter函数下查看
-//程序制作 钟明辉 & 黄志涣
-
 #include <QWidget>
 #include <QLabel>
 
@@ -59,7 +48,6 @@ public:
     void ang_clicked();
     void aok_clicked();
 
-    //函数重写
     void show();
     bool eventFilter(QObject *watched, QEvent *event);
     //
@@ -71,9 +59,9 @@ public:
 
     void nextimg();
 
-    void initfolder();
-    void query();
-    void query(QString);
+//    void initfolder();
+//    void query();
+//    void query(QString);
 signals:
     void valueChange(int cid,int type);
     void changeState(int myid,WINSTATE state);
@@ -81,6 +69,8 @@ signals:
 private slots:
     void StateChange(int cid,WINSTATE state);
 private:
+    //sql
+//    cameraSql c_sql;
     //img load
     QThread* thread;
     FileReader reader;

@@ -19,6 +19,9 @@
 
 #include <QWidget>
 
+#include "mcore.h"
+#include "camerasql.h"
+
 #define TableDataNull "--"
 #define SystemDateFormat "yyyy-MM-dd hh:mm:ss"
 #define TableHeadStr_OK "OK"
@@ -94,7 +97,9 @@ private slots:
     void on_up_camBox_currentIndexChanged(int index);
 
 private:
+    //systemcore
 
+    MCore _Core;
     //update
     int kpos,npos;
     QVector<QWidget*> all_imgs;

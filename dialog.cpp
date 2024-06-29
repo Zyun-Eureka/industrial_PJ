@@ -19,11 +19,11 @@ Dialog::Dialog(QWidget *parent)
 
     initTable();
 
-    timer = new QTimer();
     //timer->start(100);
     mv_img = new QWidget(this);
-
     mv_img->hide();
+
+    timer = new QTimer();
     connect(timer,SIGNAL(timeout()),this,SLOT(timer_event()));
 
     connect(&settings,SIGNAL(change(int,int)),this,SLOT(setting_c(int,int)));
@@ -34,29 +34,15 @@ Dialog::Dialog(QWidget *parent)
 
     ui->AllData->installEventFilter(this);
     ui->SubData->installEventFilter(this);
-    //
-//    ui->up_tree->installEventFilter(this);
-//    ui->update_main->installEventFilter(this);
-//    ui->up_img->installEventFilter(this);
-//    ui->update_main->installEventFilter(this);
-//    ui->up_ok_area->installEventFilter(this);
-//    ui->up_ng_area->installEventFilter(this);
     mv_img->installEventFilter(this);
-
-
     setWindowFlags(Qt::WindowMaximizeButtonHint|Qt::WindowCloseButtonHint);
 
     all_NG=all_OK=com_NG=com_OK=0;
-    settings.sysn();
-    //
-//    ui->up_tree->setHeaderHidden(true);
-//    ui->up_tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
-//    ui->up_tree->setModel(_fileManger.u_model);
-//    ui->up_list->setEditTriggers(QAbstractItemView::NoEditTriggers);
-//    ui->up_list->setModel(_fileManger.u_fmodel);
     ui->main_area->setCurrentIndex(0);
-
     up_bt_bk.setRgb(26,95,180);
+    //config load
+
+    settings.sysn();
 }
 
 Dialog::~Dialog()
@@ -68,7 +54,6 @@ Dialog::~Dialog()
     }
     delete ui;
 }
-
 
 bool Dialog::eventFilter(QObject *obj, QEvent *e){
     if(e->type()==QEvent::Paint){
@@ -166,13 +151,25 @@ void Dialog::setcamera(int row, int column)
 {
     camNum = row*column;
     int num = camNum;
-    //
+    // main page table
     updataTable(num);
-    //
+    // check and add new camera
+    camera *_cam;
+    QString _str;
     while (num > cameras.length()) {
-        cameras.push_back(new camera(cameras.length(),ui->b_data_area,ui->display_area));
-        connect_state(cameras.last());
+        _cam = new camera(cameras.length(),ui->b_data_area,ui->display_area);
+        cameras.push_back(_cam);
+        connect_state(_cam);
+        _str = _Core.initCFolder(QString::number(_cam->GetID()));
+        if(!_str.isEmpty()){
+            _cam->setPath(_str);
+        }else{
+            qDebug()<<"camera get path error";
+        }
     }
+    //update page init
+    ui->up_camBox->clear();
+    //
     for(QVector<camera*>::Iterator it = cameras.begin();it != cameras.end();it++){
         (*it)->p_StateChange(WINSTATE::_Out);
     }
@@ -200,6 +197,9 @@ void Dialog::setcamera(int row, int column)
             hb->addWidget(tmp);
             lhb->addWidget(tmp->state);
             tmp->p_StateChange(WINSTATE::_Normal);
+            // add camera to list
+            ui->up_camBox->addItem(QString::number(tmp->GetID()));
+            //
         }
         box->addLayout(hb);
         lbox->addLayout(lhb);
@@ -364,7 +364,6 @@ void Dialog::on_comboBox_currentIndexChanged(int index)
     updateCom();
 }
 
-
 void Dialog::on_pushButton_clicked()
 {
     if(!timer->isActive()){
@@ -477,11 +476,13 @@ void Dialog::on_update_bt_toggled(bool checked)
 
 void Dialog::on_up_camBox_currentIndexChanged(int index)
 {
-    if(ui->up_DateQ->isChecked()){
-        cameras[index]->query("");
-    }else{
-        cameras[index]->query();
-    }
+    if(ui->up_camBox->count()==0)return;
+//    if(ui->up_DateQ->isChecked()){
+//        cameras[index]->query("");
+//    }else{
+//        cameras[index]->query();
+//    }
 //    cameras[index]->
+    //cameraSql::querImgsName(QString("camera_id=%1").arg(cameras[index]->GetID()));
 }
 

@@ -63,7 +63,7 @@ font: 700 14pt &quot;Microsoft YaHei&quot;;
       <enum>QFrame::Raised</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="page1">
       <property name="styleSheet">

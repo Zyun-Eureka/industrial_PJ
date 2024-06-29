@@ -14,12 +14,16 @@ class cameraSql : public QObject
     Q_OBJECT
 public:
     explicit cameraSql(QObject *parent = nullptr);
-    bool init(QString name);
+    bool init(QString sqlpath, QString imgPath);
     //create table cameraImg(id integer primary key autoincrement,name char(256),time date,cameraId int,imgPath char(256),result boolean)
-    bool insertImg(QString name,bool result,QString path="");
 
-    QStringList querData(QString querystr);
+    bool initDB();
+    bool initTable();
+//    static QStringList querData(QString querystr);
+    bool insertImg(QString imgName, bool result, QString camera_id);
+    bool newCamera(QString cameraId,QString path);
 
+    QStringList querImgsName(QString querystr);
 signals:
 private:
     QSqlDatabase db;

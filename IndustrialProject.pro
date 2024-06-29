@@ -13,8 +13,11 @@ SOURCES += \
     camerasql.cpp \
     filemanager.cpp \
     filereader.cpp \
+    imglist.cpp \
     main.cpp \
     dialog.cpp \
+    mcore.cpp \
+    newsql.cpp \
     opencv.cpp \
     settingpage.cpp \
     systemconf.cpp \
@@ -26,6 +29,9 @@ HEADERS += \
     dialog.h \
     filemanager.h \
     filereader.h \
+    imglist.h \
+    mcore.h \
+    newsql.h \
     opencv.h \
     settingpage.h \
     systemconf.h \
@@ -34,8 +40,14 @@ HEADERS += \
 FORMS += \
     camera.ui \
     dialog.ui \
+    imglist.ui \
     settingpage.ui \
     vertify_d.ui
+
+INCLUDEPATH +=/home/eureka/CMAKEINSTALL/opencv/include/opencv4/
+INCLUDEPATH +=/home/eureka/CMAKEINSTALL/onnxruntime-linux-x64-1.18.0/include/
+LIBS +=/home/eureka/CMAKEINSTALL/opencv/lib/libopencv_*
+LIBS +=/home/eureka/CMAKEINSTALL/onnxruntime-linux-x64-1.18.0/lib/libonnxruntime.so
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

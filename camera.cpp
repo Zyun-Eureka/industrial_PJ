@@ -17,7 +17,6 @@ camera::camera(int ID, QWidget *state_area, QWidget *parent)
     value_NG = 0;
     value_OK = 0;
 
-    //注册事件循环监听
     ui->display->installEventFilter(this);
     ui->frame_top->installEventFilter(this);
     ui->img->installEventFilter(this);
@@ -27,14 +26,9 @@ camera::camera(int ID, QWidget *state_area, QWidget *parent)
     thread = new QThread();
     reader.moveToThread(thread);
     thread->start();
-    connect(this,&camera::sig_next,&reader,&FileReader::next);
     connect(&reader,&FileReader::Readready,this,[&](){
         ui->img->update();
     });
-
-    if(systemConf::values[CONF_CAMERA_NUM].toInt()>ID){
-        setPath(systemConf::values[CONF_CAMERA_PATH+QString::number(ID)].toString());
-    }
 }
 
 camera::~camera()
@@ -56,7 +50,8 @@ bool camera::eventFilter(QObject *watched, QEvent *event)
     if(watched == ui->display){
         if(event->type()==QEvent::Resize){
             reader.setSize(ui->display->size());
-        }else if(event->type()==QEvent::ContextMenu){
+            // @false
+        }else if(false&&event->type()==QEvent::ContextMenu){
             QString str = QFileDialog::getExistingDirectory(nullptr,"open",reader.getpath(),QFileDialog::ShowDirsOnly);
             if(!str.isEmpty()){
                 setPath(str);
@@ -77,6 +72,11 @@ bool camera::eventFilter(QObject *watched, QEvent *event)
                 QPainter pa(ui->img);
                 pa.drawImage(reader.x,reader.y,*img);
             }
+        }else if(event->type()==QEvent::ContextMenu){
+            // img input
+            reader.ReadImg(QFileDialog::getOpenFileName(nullptr,"open",reader.getpath()),ui->enabled_bt->isChecked());
+            // opencv
+            // save img
         }
     }
     return QWidget::eventFilter(watched,event);
@@ -111,8 +111,11 @@ void camera::p_StateChange(WINSTATE state)
 
 void camera::setPath(QString path)
 {
+    //img save path
+    qDebug()<<path;
     reader.setPath(path);
-    systemConf::save(CONF_CAMERA_GROUP,CONF_CAMERA_PATH+QString::number(ID),path);
+    reader.setcid(ID);
+    //systemConf::save(CONF_CAMERA_GROUP,CONF_CAMERA_PATH+QString::number(ID),path);
 }
 
 QString camera::getPath()
@@ -125,19 +128,19 @@ void camera::nextimg()
     sig_next();
 }
 
-void camera::initfolder()
-{
-}
+//void camera::initfolder()
+//{
+//}
 
-void camera::query()
-{
+//void camera::query()
+//{
 
-}
+//}
 
-void camera::query(QString)
-{
+//void camera::query(QString)
+//{
 
-}
+//}
 
 void camera::StateChange(int cid,WINSTATE s)
 {
