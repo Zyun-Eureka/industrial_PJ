@@ -1,4 +1,4 @@
-#ifndef CAMERASQL_H
+﻿#ifndef CAMERASQL_H
 #define CAMERASQL_H
 
 #include <QObject>
@@ -17,18 +17,17 @@ public:
     bool init(QString sqlpath, QString imgPath);
     //create table cameraImg(id integer primary key autoincrement,name char(256),time date,cameraId int,imgPath char(256),result boolean)
 
-    bool initDB();
-    bool initTable();
+    static bool initDB(QString camre_id,QString path);
+//    bool initTable();
 //    static QStringList querData(QString querystr);
-    bool insertImg(QString imgName, bool result, QString camera_id);
-    bool newCamera(QString cameraId,QString path);
+//    bool insertImg(QString imgName, bool result, QString camera_id);
+//    bool newCamera(QString cameraId,QString path);
 
-    QStringList querImgsName(QString querystr);
+//    QStringList querImgsName(QString querystr);
 signals:
 private:
-    QSqlDatabase db;
-    QString cid;
-    QString path;
+//    QString cid;
+//    QString path;
 };
 
 #endif // CAMERASQL_H

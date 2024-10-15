@@ -2,6 +2,7 @@
 #include "ui_camera.h"
 
 #include <QDebug>
+#include "mcore.h"
 
 camera::camera(int ID, QWidget *state_area, QWidget *parent)
     : QWidget(parent)
@@ -17,18 +18,23 @@ camera::camera(int ID, QWidget *state_area, QWidget *parent)
     value_NG = 0;
     value_OK = 0;
 
-    ui->display->installEventFilter(this);
+//    ui->display->installEventFilter(this);
     ui->frame_top->installEventFilter(this);
     ui->img->installEventFilter(this);
 
-    img = new QImage();
-    reader.setImgBuffer(img);
+    nreader = new n_fileReader(MCore::GetDBName(QString::number(ID)));
     thread = new QThread();
-    reader.moveToThread(thread);
+    nreader->moveToThread(thread);
     thread->start();
-    connect(&reader,&FileReader::Readready,this,[&](){
-        ui->img->update();
-    });
+
+    tmp_timer = new QTimer(this);
+    connect(tmp_timer,SIGNAL(timeout()),this,SLOT(timeouts()));
+    tmp_timer->start(1);
+
+
+    connect(nreader,SIGNAL(Readready()),ui->img,SLOT(update()));
+    p_StateChange(WINSTATE::_Normal);
+
 }
 
 camera::~camera()
@@ -47,15 +53,13 @@ void camera::show()
 
 bool camera::eventFilter(QObject *watched, QEvent *event)
 {
-    if(watched == ui->display){
+    if(watched == ui->img){
         if(event->type()==QEvent::Resize){
-            reader.setSize(ui->display->size());
+            nreader->screenSizeChange(ui->img->width(),ui->img->height());
+
             // @false
+//            reader.setSize(ui->display->size());
         }else if(false&&event->type()==QEvent::ContextMenu){
-            QString str = QFileDialog::getExistingDirectory(nullptr,"open",reader.getpath(),QFileDialog::ShowDirsOnly);
-            if(!str.isEmpty()){
-                setPath(str);
-            }
         }
     }else if(watched == ui->frame_top){
         if(event->type()==QEvent::MouseButtonDblClick){
@@ -68,15 +72,10 @@ bool camera::eventFilter(QObject *watched, QEvent *event)
         }
     }else if(watched == ui->img){
         if(event->type()==QEvent::Paint){
-            if(img!=nullptr){
+            if(nreader->ImgBuffer()!=nullptr){
                 QPainter pa(ui->img);
-                pa.drawImage(reader.x,reader.y,*img);
+                pa.drawImage(nreader->GetIX(),nreader->GetIY(),*nreader->ImgBuffer());
             }
-        }else if(event->type()==QEvent::ContextMenu){
-            // img input
-            reader.ReadImg(QFileDialog::getOpenFileName(nullptr,"open",reader.getpath()),ui->enabled_bt->isChecked());
-            // opencv
-            // save img
         }
     }
     return QWidget::eventFilter(watched,event);
@@ -111,16 +110,13 @@ void camera::p_StateChange(WINSTATE state)
 
 void camera::setPath(QString path)
 {
-    //img save path
-    qDebug()<<path;
-    reader.setPath(path);
-    reader.setcid(ID);
-    //systemConf::save(CONF_CAMERA_GROUP,CONF_CAMERA_PATH+QString::number(ID),path);
+    nreader->setInputPath(path);
 }
 
 QString camera::getPath()
 {
-    return reader.getpath();
+    return false;
+//    return reader.getpath();
 }
 
 void camera::nextimg()
@@ -128,19 +124,6 @@ void camera::nextimg()
     sig_next();
 }
 
-//void camera::initfolder()
-//{
-//}
-
-//void camera::query()
-//{
-
-//}
-
-//void camera::query(QString)
-//{
-
-//}
 
 void camera::StateChange(int cid,WINSTATE s)
 {
@@ -192,4 +175,18 @@ void camera::StateChange(int cid,WINSTATE s)
         }
     }
     winState = s;
+}
+
+void camera::getResult(int i)
+{
+    if(i==1){
+        aok_clicked();
+    }else{
+        ang_clicked();
+    }
+}
+
+void camera::timeouts()
+{
+//    nreader->next();
 }

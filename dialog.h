@@ -1,4 +1,4 @@
-#ifndef DIALOG_H
+﻿#ifndef DIALOG_H
 #define DIALOG_H
 
 #include <QDialog>
@@ -11,7 +11,7 @@
 #include <QLabel>
 
 #include "settingpage.h"
-#include "filemanager.h"
+//#include "filemanager.h"
 #include <QTableWidgetItem>
 #include <QMouseEvent>
 
@@ -21,6 +21,8 @@
 
 #include "mcore.h"
 #include "camerasql.h"
+
+#include "sql_filereader.h"
 
 #define TableDataNull "--"
 #define SystemDateFormat "yyyy-MM-dd hh:mm:ss"
@@ -73,6 +75,8 @@ private slots:
     void timer_event();
     void cvchange(int,int);
 
+    void up_readimg(bool type,int index);
+
     void setting_c(int,int);
     void on_setting_bt_clicked();
 
@@ -96,6 +100,11 @@ private slots:
 
     void on_up_camBox_currentIndexChanged(int index);
 
+
+    void on_up_query_clicked();
+
+    void cle();
+
 private:
     //systemcore
 
@@ -117,7 +126,7 @@ private:
     int camNum;
     unsigned long long all_NG,all_OK,com_NG,com_OK;
 
-    FileManager _fileManger;
+//    FileManager _fileManger;
 
     void updateNum();
     void updateCom();
@@ -127,6 +136,9 @@ private:
     bool up_img_click;
 
     QWidget *mv_img;
+
+    sql_filereader *sql_reader;
+    QThread *sql_reader_thread;
 
     QColor up_bt_bk;
     Ui::Dialog *ui;

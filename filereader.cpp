@@ -1,30 +1,33 @@
-#include "filereader.h"
+﻿#include "filereader.h"
 
 #include <QDebug>
 #include <QThread>
 
 #include <QPainter>
 
+#include <QFile>
+
+#include <QRandomGenerator>
+
 FileReader::FileReader(QObject *parent)
     : QObject{parent}
 {
     img = nullptr;
     //path to read
-    connect(this,&FileReader::opencvrun,this,[=](QString pa){
-        opencv::run(pa,&op_sig);
-    });
-
-    connect(&op_sig,SIGNAL(ImgResult(QString,size_t,float)),this,SLOT(opencvresult(QString,size_t,float)));
-
-
     //pen
     ok_pen.setBrush(QColor(255,255,255,100));
     ok_pen.setWidth(2);
     ok_pen.setColor(Qt::green);
     //font
     ok_font.setPixelSize(30);
-//    sql.init(
-//    sql = nullptr;
+
+    watcher = new QFileSystemWatcher();
+//    connect(watcher,SIGNAL(directoryChanged(QString)),this,SLOT(FileChange(QString)));
+}
+
+FileReader::~FileReader()
+{
+//    watcher->deleteLater();
 }
 
 bool FileReader::setcid(int cid)
@@ -44,29 +47,32 @@ void FileReader::setImgBuffer(QImage *img)
     this->img = img;
 }
 
-bool FileReader::writeBuffer(QString _imgPath,int flage)
-{
-    if(img==nullptr)return false;
-    *img =QImage(_imgPath).scaled(size,Qt::KeepAspectRatio);
-    if(flage!=-1){
-        QPainter pa(img);
-        pa.setPen(flage==0?ok_pen:ng);
-        pa.setFont(ok_font);
-//        pa.setBrush(flage==0?QColor(255,255,255,100):QColor(255,0,0,100));
-        pa.drawRect(4,4,80,30);
-        pa.drawText(4,4,80,30,Qt::AlignCenter,flage==0?"OK":"NG");
-    }
-    if(!img->isNull()){
-        x = (size.width()-img->width())/2.0;
-        y = (size.height()-img->height())/2.0;
-        Readready();
-    }
-}
+//bool FileReader::writeBuffer(QString _imgPath,int flage)
+//{
+//    if(img==nullptr)return false;
+//    *img =QImage(_imgPath).scaled(size,Qt::KeepAspectRatio);
+//    if(flage!=-1){
+//        QPainter pa(img);
+//        pa.setPen(flage==0?ok_pen:ng);
+//        pa.setFont(ok_font);
+////        pa.setBrush(flage==0?QColor(255,255,255,100):QColor(255,0,0,100));
+//        pa.drawRect(4,4,80,30);
+//        pa.drawText(4,4,80,30,Qt::AlignCenter,flage==0?"OK":"NG");
+//    }
+//    if(!img->isNull()){
+//        x = (size.width()-img->width())/2.0;
+//        y = (size.height()-img->height())/2.0;
+//        Readready();
+//    }
+//}
 
 void FileReader::setPath(QString path)
 {
     //img save path
+//    qDebug()<<path;
     this->path = path;
+    dir.setPath(path);
+//    watcher->addPath(dir.path()+"/input");
 }
 
 bool FileReader::next(bool change)
@@ -91,36 +97,43 @@ bool FileReader::next(bool change)
     }
 }
 
-void FileReader::scan()
+void FileReader::scan(bool again)
 {
-    return;
-    QStringList list;
-    list << "*.jpg"<<"*.png";
-    for(QString i:dir.entryList(list,QDir::NoDotAndDotDot|QDir::Files)){
-        files.push_back(i);
-    }
+//    if(!again&&!wlock.tryLock())return;
+
+//    files.clear();
+//    QFile file;
+//    QDir _dir = dir;
+//    _dir.cd("input");
+//    for(QString i:_dir.entryList(list,QDir::NoDotAndDotDot|QDir::Files)){
+//        file.setFileName(_dir.path()+"\\"+i);
+//        if(img==nullptr)break;
+//        *img = QImage(file.fileName()).scaled(size,Qt::KeepAspectRatio);
+//        if(!img->isNull()){
+//            x = (size.width()-img->width())/2.0;
+//            y = (size.height()-img->height())/2.0;
+//            Readready();
+//            if(QRandomGenerator::global()->generate()%9==1){
+//                file.rename(dir.path()+"\\NG\\"+i);
+//                cvResult(0);
+//            }else{
+//                file.rename(dir.path()+"\\OK\\"+i);
+//                cvResult(1);
+//            }
+//        }else{
+//            qDebug()<<file.fileName();
+//        }
+//    }
+//    if(again){
+//        scan(false);
+//    }
+//    else wlock.unlock();
 }
 
 void FileReader::setSize(QSize size)
 {
     this->size = size;
     next(true);
-}
-
-void FileReader::initFolder(QString id)
-{
-}
-
-void FileReader::ReadImg(QString str,bool r)
-{
-    //    QImage img(str);
-    //opencv
-    qDebug()<<str<<path;
-    if(r&&!str.isEmpty())
-        opencvrun(str);
-    else
-        writeBuffer(str);
-    //save
 }
 
 int FileReader::GetType()
@@ -133,22 +146,8 @@ double FileReader::GetValue()
     return -1;
 }
 
-void FileReader::opencvresult(QString path, size_t size, float value)
+void FileReader::FileChange(QString s)
 {
-    QString name;
-    int i =path.size()-1;
-    for(;i>0;i--){
-        if(path[i]=='/'){
-            break;
-        }
-    }
-    name = path.mid(i);
-    //qDebug()<<path<<size<<value;
-    if(!cid.isEmpty()){
-//        cameraSql::insertImg(name,true,cid);
-    }else{
-        qDebug()<<"sqls need cid";
-    }
-    writeBuffer(path,size);
-    qDebug()<<QFile::copy(path,this->path+"/OK"+name);
+//    qDebug()<<s;
+    scan();
 }

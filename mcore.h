@@ -1,4 +1,4 @@
-#ifndef MCORE_H
+﻿#ifndef MCORE_H
 #define MCORE_H
 
 #include <QObject>
@@ -12,6 +12,8 @@
 #define OK_FOLDER "OK"
 #define NG_FOLDER "NG"
 
+//#include <QFileSystemWatcher>
+
 class MCore : public QObject
 {
     Q_OBJECT
@@ -23,10 +25,14 @@ public:
     void setCDir(QString dir){_cdir.setPath(dir);}
     QString initCFolder(QString camid);
 
+    static QString GetDBName(QString cid);
+
 signals:
+    void FileW_Change(QString);
 private:
     //camera dir
     cameraSql sql;
+//    QFileSystemWatcher FileWatcher;
 //
     QDir _cdir;
 };

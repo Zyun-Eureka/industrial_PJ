@@ -1,4 +1,4 @@
-#ifndef CAMERA_H
+﻿#ifndef CAMERA_H
 #define CAMERA_H
 
 #include <QWidget>
@@ -12,6 +12,10 @@
 #include <QThread>
 
 #include <QFileDialog>
+
+#include <n_filereader.h>
+
+#include <QTimer>
 
 //窗口状态:正常，最大化，隐藏，未在范围内
 enum WINSTATE{_Normal = 0,_Max,_Hide,_Out};
@@ -68,12 +72,19 @@ signals:
     void sig_next(bool = false);
 private slots:
     void StateChange(int cid,WINSTATE state);
+    void getResult(int);
+
+    void timeouts();
 private:
     //sql
 //    cameraSql c_sql;
     //img load
     QThread* thread;
-    FileReader reader;
+//    FileReader reader;
+    n_fileReader* nreader;
+
+    //tmp timer
+    QTimer *tmp_timer;
 
     int value_OK;
     int value_NG;
@@ -81,7 +92,7 @@ private:
     WINSTATE winState;
 
     int ID;
-    QImage* img;
+//    QImage* img;
     Ui::camera *ui;
 };
 

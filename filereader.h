@@ -1,4 +1,4 @@
-#ifndef FILEREADER_H
+﻿#ifndef FILEREADER_H
 #define FILEREADER_H
 
 #include <QObject>
@@ -10,7 +10,10 @@
 #include <QFont>
 #include "camerasql.h"
 
-#include "opencv.h"
+//#include "opencv.h"
+
+#include <QFileSystemWatcher>
+#include <QMutex>
 
 //#define OK_FOLDER "OK"
 //#define NG_FOLDER "NG"
@@ -23,6 +26,7 @@ class FileReader : public QObject
     Q_OBJECT
 public:
     explicit FileReader(QObject *parent = nullptr);
+    ~FileReader();
 
     // sql camera id
     bool setcid(int cid);
@@ -33,13 +37,11 @@ public:
     // set img buffer
     void setImgBuffer(QImage *);
 
-    bool writeBuffer(QString _imgPath, int flage=-1);
+//    bool writeBuffer(QString _imgPath, int flage=-1);
     //old
     bool next(bool = false);
-    void scan();
+    void scan(bool again = true);
     void setSize(QSize);
-
-    void initFolder(QString id);
 
     void putImg(QString str);
 
@@ -48,16 +50,15 @@ public:
 
     int x;
     int y;
-    void ReadImg(QString str, bool r);
 signals:
     void Readready();
-    void opencvrun(QString);
+    void cvResult(int);
 private slots:
-    void opencvresult(QString path,size_t size,float value);
+    void FileChange(QString);
 private:
     QPen ok_pen,ng;
     QFont ok_font;
-    opencv op_sig;
+    //opencv op_sig;
 
     QSize size;
     QDir dir;
@@ -65,6 +66,8 @@ private:
     QString path;
     QString cid;
     QStringList files;
+    QFileSystemWatcher *watcher;
+    QMutex wlock;
 //    cameraSql* sql;
 };
 

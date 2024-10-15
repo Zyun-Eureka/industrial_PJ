@@ -28,10 +28,6 @@ Dialog::Dialog(QWidget *parent)
 
     connect(&settings,SIGNAL(change(int,int)),this,SLOT(setting_c(int,int)));
 
-    connect(&_fileManger,&FileManager::up_img_update,this,[&](){
-        //ui->up_img->update();
-    });
-
     ui->AllData->installEventFilter(this);
     ui->SubData->installEventFilter(this);
     mv_img->installEventFilter(this);
@@ -43,6 +39,25 @@ Dialog::Dialog(QWidget *parent)
     //config load
 
     settings.sysn();
+
+
+    //  update area picture list init
+    ui->cl1->addw(mv_img);
+    ui->cl2->addw(mv_img);
+    ui->cl1->setmapparent(this);
+    ui->cl2->setmapparent(this);
+
+    ui->cl1->link(ui->cl2);
+    ui->cl2->link(ui->cl1);
+
+    //picture reader
+    sql_reader = new sql_filereader();
+    sql_reader_thread = new QThread();
+    sql_reader->moveToThread(sql_reader_thread);
+    sql_reader_thread->start();
+
+    connect(sql_reader,SIGNAL(imgReady(bool,int)),this,SLOT(up_readimg(bool,int)));
+    connect(sql_reader,SIGNAL(clearList()),this,SLOT(cle()));
 }
 
 Dialog::~Dialog()
@@ -65,8 +80,8 @@ bool Dialog::eventFilter(QObject *obj, QEvent *e){
         }else if(obj == ui->up_ng_area){
             up_ng_pe();
         }else */if(obj == mv_img){
-            QPainter pa(mv_img);
-            pa.drawImage(0,0,_fileManger.up_c_buffer);
+            //            QPainter pa(mv_img);
+            //            pa.drawImage(0,0,_fileManger.up_c_buffer);
         }
         QVector<double> value;
         if(obj == ui->AllData){
@@ -126,22 +141,22 @@ e_m_start:
         }
         dialog_point = calculatePos(ui->update_main,ui->main_area);*/
     }else if(e->type()==QEvent::ContextMenu){
-//        if(obj==ui->up_tree){
-//            _fileManger.getUpdataPath();
-//        }
+        //        if(obj==ui->up_tree){
+        //            _fileManger.getUpdataPath();
+        //        }
     }else if(e->type()==QEvent::MouseButtonPress){
-//        if(obj == ui->update_main){
-//            up_img_click = ui->up_img->geometry().contains(static_cast<QMouseEvent*>(e)->pos());
-//            mv_img->resize(_fileManger.up_c_buffer.size());
-//        }
+        //        if(obj == ui->update_main){
+        //            up_img_click = ui->up_img->geometry().contains(static_cast<QMouseEvent*>(e)->pos());
+        //            mv_img->resize(_fileManger.up_c_buffer.size());
+        //        }
     }else if(e->type()==QEvent::MouseMove){
-        mv_img->move(static_cast<QMouseEvent*>(e)->pos()+dialog_point-QPoint(mv_img->width()/2.0,mv_img->height()/2.0));
-//        if(up_img_click && obj == ui->update_main){
-//            mv_img->show();
-//        }
+        //        mv_img->move(static_cast<QMouseEvent*>(e)->pos()+dialog_point-QPoint(mv_img->width()/2.0,mv_img->height()/2.0));
+        //        if(up_img_click && obj == ui->update_main){
+        //            mv_img->show();
+        //        }
     }else if(e->type()==QEvent::MouseButtonRelease){
         up_img_click = false;
-        mv_img->hide();
+        //        mv_img->hide();
     }
 e_f_end:
     return QDialog::eventFilter(obj,e);
@@ -157,10 +172,10 @@ void Dialog::setcamera(int row, int column)
     camera *_cam;
     QString _str;
     while (num > cameras.length()) {
+        _str = _Core.initCFolder(QString::number(cameras.length()));
         _cam = new camera(cameras.length(),ui->b_data_area,ui->display_area);
         cameras.push_back(_cam);
         connect_state(_cam);
-        _str = _Core.initCFolder(QString::number(_cam->GetID()));
         if(!_str.isEmpty()){
             _cam->setPath(_str);
         }else{
@@ -198,7 +213,7 @@ void Dialog::setcamera(int row, int column)
             lhb->addWidget(tmp->state);
             tmp->p_StateChange(WINSTATE::_Normal);
             // add camera to list
-            ui->up_camBox->addItem(QString::number(tmp->GetID()));
+            ui->up_camBox->addItem(QString::number(tmp->GetID()+1));
             //
         }
         box->addLayout(hb);
@@ -294,14 +309,14 @@ void Dialog::toquery()
 void Dialog::timer_event()
 {
     ui->Date->setText(QDateTime::currentDateTime().toString(SystemDateFormat));
-    for(int i =0;i<camNum;i++){
-        cameras[i]->nextimg();
-        if(QRandomGenerator::global()->generate()%9==1){
-            cameras[i]->ang_clicked();
-        }else{
-            cameras[i]->aok_clicked();
-        }
-    }
+    //    for(int i =0;i<camNum;i++){
+    //        cameras[i]->nextimg();
+    //        if(QRandomGenerator::global()->generate()%9==1){
+    //            cameras[i]->ang_clicked();
+    //        }else{
+    //            cameras[i]->aok_clicked();
+    //        }
+    //    }
 }
 
 void Dialog::cvchange(int id,int t)
@@ -317,6 +332,14 @@ void Dialog::cvchange(int id,int t)
     updateNum();
     if(id == ui->comboBox->currentIndex()){
         updateCom();
+    }
+}
+
+void Dialog::up_readimg(bool type, int index)
+{
+    //    qDebug()<<type<<index;
+    if(type){
+        ui->cl1->t_add(sql_reader->OK_img_list[index]);
     }
 }
 
@@ -390,99 +413,30 @@ void Dialog::on_update_bt_toggled(bool checked)
     }
 }
 
-//void Dialog::on_up_tree_pressed(const QModelIndex &index)
-//{
-//    if(index.isValid())
-//        _fileManger.u_flist_change(index);
-//}
-
-//void Dialog::on_up_list_pressed(const QModelIndex &index)
-//{
-//    if(index.isValid())
-//        _fileManger.u_flist_click(index);
-//}
-
-//void Dialog::on_up_pressed()
-//{
-//    int row = ui->up_list->currentIndex().row()-1;
-//    if(row == -2)return;
-//    if(row == -1)row = ui->up_list->model()->rowCount()-1;
-//    ui->up_list->pressed(ui->up_list->model()->index(row,0));
-//    ui->up_list->setCurrentIndex(ui->up_list->model()->index(row,0));
-//}
-
-//void Dialog::on_next_pressed()
-//{
-//    int row = ui->up_list->currentIndex().row()+1;
-//    if(row == ui->up_list->model()->rowCount()+1)return;
-//    if(row == ui->up_list->model()->rowCount())row = 0;
-//    ui->up_list->pressed(ui->up_list->model()->index(row,0));
-//    ui->up_list->setCurrentIndex(ui->up_list->model()->index(row,0));
-//}
-
-//QPoint Dialog::calculatePos(QWidget *wid,QWidget* end)
-//{
-//    if(wid==end)return wid->pos();
-//    QPoint a = wid->pos();
-//    if(static_cast<QWidget*>(wid->parent())!=nullptr){
-//        a+=calculatePos(static_cast<QWidget*>(wid->parent()),end);
-//    }
-//    return a;
-//}
-
-//void Dialog::up_ok_pe(bool is)
-//{
-//    QPainter pa(ui->up_ok_area);
-//    QPen pen;
-//    if(is){
-//        pen.setWidth(2);
-//    }else{
-//        pen.setWidth(1);
-//    }
-//    pen.setColor(Qt::transparent);
-//    pa.setPen(pen);
-//    pa.setBrush(up_bt_bk);
-//    QRect rect = ui->up_ok_area->rect();
-//    rect.setX(rect.x()-pen.width());
-//    rect.setY(rect.y()-pen.width());
-//    pa.drawRoundedRect(rect,10,10);
-//    pen.setColor(Qt::white);
-//    pa.setPen(pen);
-//    pa.drawText(rect,Qt::AlignCenter,"OK");
-
-//}
-
-//void Dialog::up_ng_pe(bool is)
-//{
-//    QPainter pa(ui->up_ng_area);
-//    QPen pen;
-//    if(is){
-//        pen.setWidth(2);
-//    }else{
-//        pen.setWidth(1);
-//    }
-//    pen.setWidth(1);
-//    pen.setColor(Qt::transparent);
-//    pa.setPen(pen);
-//    pa.setBrush(up_bt_bk);
-//    QRect rect = ui->up_ng_area->rect();
-//    rect.setX(rect.x()-pen.width());
-//    rect.setY(rect.y()-pen.width());
-//    pa.drawRoundedRect(rect,10,10);
-//    pen.setColor(Qt::white);
-//    pa.setPen(pen);
-//    pa.drawText(rect,Qt::AlignCenter,"NG");
-//}
 
 void Dialog::on_up_camBox_currentIndexChanged(int index)
 {
-    if(ui->up_camBox->count()==0)return;
-//    if(ui->up_DateQ->isChecked()){
-//        cameras[index]->query("");
-//    }else{
-//        cameras[index]->query();
-//    }
-//    cameras[index]->
+    qDebug()<<index;
+    //    if(ui->up_camBox->count()==0)return;
+    //    if(ui->up_DateQ->isChecked()){
+    //        cameras[index]->query("");
+    //    }else{
+    //        cameras[index]->query();
+    //    }
+    //    cameras[index]->
     //cameraSql::querImgsName(QString("camera_id=%1").arg(cameras[index]->GetID()));
+}
+
+
+void Dialog::on_up_query_clicked()
+{
+    sql_reader->setPath(_Core.getCDir()+"/"+QString::number(ui->up_camBox->currentIndex()));
+    sql_reader->readDB(QString("DB%1.dat").arg(ui->up_camBox->currentIndex()));
+}
+
+void Dialog::cle()
+{
+    ui->cl1->cle();
+    ui->cl2->cle();
 }
 
