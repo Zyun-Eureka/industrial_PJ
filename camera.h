@@ -1,4 +1,4 @@
-﻿#ifndef CAMERA_H
+#ifndef CAMERA_H
 #define CAMERA_H
 
 #include <QWidget>
@@ -63,9 +63,6 @@ public:
 
     void nextimg();
 
-//    void initfolder();
-//    void query();
-//    void query(QString);
 signals:
     void valueChange(int cid,int type);
     void changeState(int myid,WINSTATE state);
@@ -76,11 +73,7 @@ private slots:
 
     void timeouts();
 private:
-    //sql
-//    cameraSql c_sql;
-    //img load
     QThread* thread;
-//    FileReader reader;
     n_fileReader* nreader;
 
     //tmp timer

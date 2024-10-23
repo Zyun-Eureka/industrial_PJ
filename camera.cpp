@@ -18,7 +18,7 @@ camera::camera(int ID, QWidget *state_area, QWidget *parent)
     value_NG = 0;
     value_OK = 0;
 
-//    ui->display->installEventFilter(this);
+    //    ui->display->installEventFilter(this);
     ui->frame_top->installEventFilter(this);
     ui->img->installEventFilter(this);
 
@@ -34,6 +34,8 @@ camera::camera(int ID, QWidget *state_area, QWidget *parent)
 
     connect(nreader,SIGNAL(Readready()),ui->img,SLOT(update()));
     p_StateChange(WINSTATE::_Normal);
+
+    ui->enabled_bt->hide();
 
 }
 
@@ -58,7 +60,7 @@ bool camera::eventFilter(QObject *watched, QEvent *event)
             nreader->screenSizeChange(ui->img->width(),ui->img->height());
 
             // @false
-//            reader.setSize(ui->display->size());
+            //            reader.setSize(ui->display->size());
         }else if(false&&event->type()==QEvent::ContextMenu){
         }
     }else if(watched == ui->frame_top){
@@ -116,7 +118,7 @@ void camera::setPath(QString path)
 QString camera::getPath()
 {
     return false;
-//    return reader.getpath();
+    //    return reader.getpath();
 }
 
 void camera::nextimg()
@@ -127,6 +129,7 @@ void camera::nextimg()
 
 void camera::StateChange(int cid,WINSTATE s)
 {
+    //    qDebug()<<cid<<"111";
     if(cid != ID){
         if(winState==WINSTATE::_Out)return;
         switch (s) {
@@ -188,5 +191,5 @@ void camera::getResult(int i)
 
 void camera::timeouts()
 {
-//    nreader->next();
+    //    nreader->next();
 }

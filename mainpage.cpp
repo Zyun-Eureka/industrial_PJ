@@ -11,9 +11,9 @@ mainpage::mainpage(QWidget *parent) :
     //
     setWindowFlags(Qt::WindowMaximizeButtonHint|Qt::WindowCloseButtonHint);
     ui->main_area->setCurrentIndex(0);
-    //
+//    //
     initTable();
-    //
+//    //
     update_mvimg = new QWidget(this);
     update_mvimg->hide();
     all_NG=all_OK=com_NG=com_OK=0;
@@ -28,9 +28,8 @@ mainpage::mainpage(QWidget *parent) :
     ui->cl1->link(ui->cl2);
     ui->cl2->link(ui->cl1);
 
-    //    ui->tableView->setModel();
     _layout = nullptr;
-    setcamera(2,2);
+    setcamera(3,3);
 }
 
 mainpage::~mainpage()
@@ -55,7 +54,7 @@ void mainpage::setcamera(int row, int column)
 {
     camNum = row*column;
     while (_cameras.count()<camNum) {
-        _cameras.push_back(new camera(_cameras.length(),ui->b_data_area));
+        _cameras.push_back(new camera(_cameras.length(),ui->b_data_area,ui->display_area));
         connect(_cameras.last(),SIGNAL(changeState(int,WINSTATE)),this,SIGNAL(d_changeState(int,WINSTATE)));
         connect(this,SIGNAL(d_changeState(int,WINSTATE)),_cameras.last(),SLOT(StateChange(int,WINSTATE)));
 
@@ -81,7 +80,7 @@ void mainpage::setcamera(int row, int column)
 
 void mainpage::initTable()
 {
-    _tableModel = new QStandardItemModel();
+    _tableModel = new QStandardItemModel();    
     _tableModel->setHorizontalHeaderLabels({TableHeadStr_OK,TableHeadStr_NG,TableHeadStr_persents});
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->tableView->setModel(_tableModel);
