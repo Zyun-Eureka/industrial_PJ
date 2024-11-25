@@ -12,10 +12,15 @@ class camera_setting : public QWidget
     Q_OBJECT
 
 public:
-    explicit camera_setting(QWidget *parent = nullptr);
+    explicit camera_setting(QString id, QWidget *parent = nullptr);
     ~camera_setting();
+    void setid(QString id);
+
+
+private slots:
 
 private:
+    QString _id;
     Ui::camera_setting *ui;
 };
 

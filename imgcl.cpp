@@ -1,4 +1,4 @@
-﻿#include "imgcl.h"
+#include "imgcl.h"
 #include "ui_imgcl.h"
 
 #include <QDebug>
@@ -56,7 +56,6 @@ void imgCL::t_add(QImage i)
     _lists.append(w);
     _lists.last()->setStyleSheet(":hover{border:1px solid;}");
     _lists.last()->setMinimumSize(MinW,MinH);
-//    ui->scrollArea->
 }
 
 void imgCL::t_add_w(clWidget *w)

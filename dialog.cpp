@@ -26,7 +26,7 @@ Dialog::Dialog(QWidget *parent)
     timer = new QTimer();
     connect(timer,SIGNAL(timeout()),this,SLOT(timer_event()));
 
-    connect(&settings,SIGNAL(change(int,int)),this,SLOT(setting_c(int,int)));
+//    connect(&settings,SIGNAL(change(int,int)),this,SLOT(setting_c(int,int)));
 
     ui->AllData->installEventFilter(this);
     ui->SubData->installEventFilter(this);
@@ -38,7 +38,7 @@ Dialog::Dialog(QWidget *parent)
     up_bt_bk.setRgb(26,95,180);
     //config load
 
-    settings.sysn();
+//    settings.sysn();
 
 
     //  update area picture list init
@@ -351,8 +351,8 @@ void Dialog::setting_c(int r, int c)
 
 void Dialog::on_setting_bt_clicked()
 {    
-    settings.lock();
-    settings.show();
+//    settings.lock();
+//    settings.show();
 }
 
 void Dialog::updateNum()

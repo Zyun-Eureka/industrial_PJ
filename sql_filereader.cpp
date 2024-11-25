@@ -1,4 +1,4 @@
-﻿#include "sql_filereader.h"
+#include "sql_filereader.h"
 #include <QDebug>
 
 #include <QThread>
@@ -32,7 +32,6 @@ void sql_filereader::read()
     //imgNewName,result
     query->exec("select imgNewName,result from imgs");
     while(query->next()){
-//        query->value(0).toString()<<query->value(1).toBool()<<"read by"<<thread()->currentThreadId();
         if(query->value(1).toBool()){
             OK_img_list.push_back(QImage(_OKPath.arg(query->value(0).toString())));
             if(OK_img_list.last().isNull()){

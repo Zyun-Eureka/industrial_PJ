@@ -3,16 +3,15 @@
 
 #include <QDialog>
 #include <vertify_d.h>
+#include <QGridLayout>
+
+#include "camera.h"
 
 #define defaultR 2
 #define defalutC 2
 
-// 程序设置界面
-// 用于修改页面布局
-// 使用 vertify_d 进行身份验证
-// 程序制作 钟明辉 & 黄志涣
-
 #include "systemconf.h"
+#include "camera_setting.h"
 
 namespace Ui {
 class SettingPage;
@@ -23,7 +22,7 @@ class SettingPage : public QDialog
     Q_OBJECT
 
 public:
-    explicit SettingPage(QWidget *parent = nullptr);
+    explicit SettingPage(QWidget* data, QWidget* display, QWidget *parent = nullptr);
     ~SettingPage();
 
     void lock();
@@ -31,11 +30,22 @@ public:
     void setColumn(int);
     void updateinfo();
     void show();
-    int exec();
+//    int exec();
 
     void sysn();
+
+
+
+    //
+    int getRow();
+    int getColumn();
+
+    QVector<camera*>* getCameraList();
+
 signals:
     void change(int,int);
+    void d_changeState(int,WINSTATE);
+    void dr_valueChange(int,int);
 
 private slots:
 
@@ -61,15 +71,27 @@ private slots:
 
     void vertify_success();
 private:
+
     vertify_d v;
-    void unlock();
     int row;
     int column;
     int row_t;
     int column_t;
     bool saveSate;
 
+    int camNum;
+    QWidget* data_a;
+    QWidget* display_a;
+
     QList<QPushButton*> btlist;
+    QVector<camera*> _cameras;
+    QVector<camera_setting*> _tmp_settings;
+    QGridLayout *_settings_layout;
+    QWidget* _settings_w;
+
+    void unlock();
+    void updateSetting();
+
     Ui::SettingPage *ui;
 };
 

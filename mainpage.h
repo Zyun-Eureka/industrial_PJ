@@ -10,12 +10,14 @@
 #include <QStandardItem>
 
 #include "camera.h"
+#include "settingpage.h"
 
 #define TableDataNull "--"
 #define SystemDateFormat "yyyy-MM-dd hh:mm:ss"
 #define TableHeadStr_OK "OK"
 #define TableHeadStr_NG "NG"
 #define TableHeadStr_persents "良品率"
+
 
 namespace Ui {
 class mainpage;
@@ -30,8 +32,14 @@ public:
     ~mainpage();
 
 
-signals:
-    void d_changeState(int,WINSTATE);
+private slots:
+    void updateCamera(int r,int c);
+
+    void on_setting_bt_released();
+
+    void on_update_bt_released();
+public slots:
+    void camera_value_change(int id,int type);
 
 private:
     bool eventFilter(QObject *obj, QEvent *e);
@@ -44,11 +52,14 @@ private:
     int camNum;
     unsigned long long all_NG,all_OK,com_NG,com_OK;
 
-    QVector<camera*> _cameras;
+    QVector<camera*>* _cameras = nullptr;
     QWidget *update_mvimg;
-    QStandardItemModel *_tableModel;
-    QGridLayout *_layout;
-    QGridLayout *_b_data_layout;
+    QStandardItemModel *_tableModel= nullptr;
+    QGridLayout *_layout = nullptr;
+    QGridLayout *_b_data_layout = nullptr;
+
+    //
+    SettingPage *setting;
 
     Ui::mainpage *ui;
 };

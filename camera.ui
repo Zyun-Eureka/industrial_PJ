@@ -62,7 +62,7 @@ border:1px solid rgb(67, 67, 67);
       <property name="spacing">
        <number>0</number>
       </property>
-      <item row="1" column="0">
+      <item row="3" column="0">
        <widget class="QFrame" name="frame_top">
         <property name="maximumSize">
          <size>
@@ -157,7 +157,7 @@ border:1px solid rgb(67, 67, 67);
         </layout>
        </widget>
       </item>
-      <item row="0" column="0">
+      <item row="2" column="0">
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -169,6 +169,20 @@ border:1px solid rgb(67, 67, 67);
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="0" column="0">
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>+</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="text">
+         <string>-</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

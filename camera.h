@@ -72,6 +72,10 @@ private slots:
     void getResult(int);
 
     void timeouts();
+    void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
+
 private:
     QThread* thread;
     n_fileReader* nreader;

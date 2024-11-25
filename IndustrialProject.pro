@@ -59,6 +59,7 @@ FORMS += \
 #LIBS +=/home/eureka/CMAKEINSTALL/opencv/lib/libopencv_*
 #LIBS +=/home/eureka/CMAKEINSTALL/onnxruntime-linux-x64-1.18.0/lib/libonnxruntime.so
 
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

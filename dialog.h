@@ -1,4 +1,4 @@
-﻿#ifndef DIALOG_H
+#ifndef DIALOG_H
 #define DIALOG_H
 
 #include <QDialog>
@@ -60,7 +60,7 @@ private:
     QVector<QLayout*> layouts_c;
     QVector<QLayout*> layouts_l;
 
-    SettingPage settings;
+//    SettingPage settings;
 
     QTimer *timer;
 

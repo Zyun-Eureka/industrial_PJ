@@ -193,3 +193,15 @@ void camera::timeouts()
 {
     //    nreader->next();
 }
+
+void camera::on_pushButton_clicked()
+{
+    aok_clicked();
+}
+
+
+void camera::on_pushButton_2_clicked()
+{
+    ang_clicked();
+}
+

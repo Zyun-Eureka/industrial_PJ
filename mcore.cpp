@@ -1,13 +1,10 @@
-﻿#include "mcore.h"
+#include "mcore.h"
 #include <QDebug>
 
 MCore::MCore(QObject *parent)
     : QObject{parent}
 {
-//    _cdir.setPath("/home/eureka/Pictures/cam");
     _cdir.setPath("D:\\imgs");
-
-//    qDebug()<<"Sql init status:"<<sql.initDB();
 }
 
 QString MCore::initCFolder(QString camid)

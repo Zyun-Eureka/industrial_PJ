@@ -1,4 +1,4 @@
-﻿#ifndef MCORE_H
+#ifndef MCORE_H
 #define MCORE_H
 
 #include <QObject>
@@ -12,7 +12,6 @@
 #define OK_FOLDER "OK"
 #define NG_FOLDER "NG"
 
-//#include <QFileSystemWatcher>
 
 class MCore : public QObject
 {
